@@ -18,10 +18,6 @@ enum Nucleotide {
         return value;
     }
 
-    public static boolean isGap(char c) {
-        return GAP.getValue() == (char) c;
-    }
-
     public static boolean isGap(char b) {
         return (char) GAP.getValue() == b;
     }
