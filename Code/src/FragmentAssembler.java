@@ -54,5 +54,6 @@ public class FragmentAssembler {
 
     public static void main(String[] args) {
         ArrayList<Fragment> fragments = extractFragments(System.getenv("PATH_COLLECTION_1"));
+        System.out.println(fragments.get(0).getFragment());
     }
 }
