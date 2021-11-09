@@ -15,27 +15,33 @@ public class FragmentAssembler {
      * @param path The path to the fasta file.
      * @return An ArrayList of Strings with all the fragments from the fasta file.
      */
-    public static ArrayList<String> extractFragments(String path) {
-        ArrayList<String> fragments = new ArrayList<>();
+    public static ArrayList<Fragment> extractFragments(String path) {
+
+        ArrayList<Fragment> fragments = new ArrayList<>();
         String data;
+
         try {
             File file = new File(path);
             Scanner reader = new Scanner(file);
             Pattern pattern = Pattern.compile("fragment");
+
             if (reader.hasNextLine()) {
                 data = reader.nextLine();
                 boolean newFragment = pattern.matcher(data).find();
+
                 while (reader.hasNextLine()) {
                     if (newFragment) {
                         StringBuilder fragment = new StringBuilder();
                         data = reader.nextLine();
                         newFragment = pattern.matcher(data).find();
+
                         while (reader.hasNextLine() && !newFragment) {
                             fragment.append(data);
                             data = reader.nextLine();
                             newFragment = pattern.matcher(data).find();
                         }
-                        fragments.add(fragment.toString());
+
+                        fragments.add(new Fragment(fragment.toString()));
                     }
                 }
             }
@@ -47,6 +53,6 @@ public class FragmentAssembler {
     }
 
     public static void main(String[] args) {
-        ArrayList<String> fragments = extractFragments(System.getenv("PATH_COLLECTION_1"));
+        ArrayList<Fragment> fragments = extractFragments(System.getenv("PATH_COLLECTION_1"));
     }
 }
