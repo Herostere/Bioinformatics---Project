@@ -2,6 +2,7 @@
  * This class is used to define a fragment.
  */
 public class Fragment {
+
     private int length;
     private String fragment;
     // stock the inverse of a fragment
