@@ -15,7 +15,7 @@ public class FragmentAssembler {
      * @param path The path to the fasta file.
      * @return An ArrayList of Strings with all the fragments from the fasta file.
      */
-    public static ArrayList<String> readFasta(String path) {
+    public static ArrayList<String> extractFragments(String path) {
         ArrayList<String> fragments = new ArrayList<>();
         String data;
         try {
@@ -47,6 +47,6 @@ public class FragmentAssembler {
     }
 
     public static void main(String[] args) {
-        System.out.println(readFasta(System.getenv("PATH_COLLECTION_1")).get(0));
+        ArrayList<String> fragments = extractFragments(System.getenv("PATH_COLLECTION_1"));
     }
 }
