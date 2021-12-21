@@ -9,6 +9,8 @@ import java.util.Scanner;
  */
 public class FragmentAssembler {
 
+    private static ArrayList<Fragment> fragments;
+
     /**
      * This method is used to extract the fragments from the fasta file.
      *
@@ -17,7 +19,7 @@ public class FragmentAssembler {
      */
     public static ArrayList<Fragment> extractFragments(String path) {
 
-        ArrayList<Fragment> fragments = new ArrayList<>();
+        fragments = new ArrayList<>();
         String data;
 
         try {
@@ -52,8 +54,12 @@ public class FragmentAssembler {
         return fragments;
     }
 
+
     public static void main(String[] args) {
+        // 1. Extraire les fragments
         Collection collection1 = new Collection(extractFragments(System.getenv("PATH_COLLECTION_1")));
         System.out.println(collection1.getCollection()[0]);
+        // 2. Alignement semi-global (matrice)
+        Graph graph = new Graph(collection1);
     }
 }
