@@ -72,7 +72,7 @@ public class Graph {
     public List<Edge> greedy(){
         int[] in = new int[n];
         int[] out = new int[n];
-        List<Edge> chemin = new ArrayList<Edge>();
+        List<Edge> chemin = new ArrayList<>();
         bubbleReverseSort(edges);
 
         for (Edge arc : edges){

@@ -9,13 +9,14 @@ public class Fragment {
 
     private int length;
     private String fragment;
+    private int shift;
     // private SuffixTree suffixTree;
     // stock the inverse of a fragment
-
 
     public Fragment(String fragment) {
         this.length = fragment.length();
         this.fragment = fragment;
+        this.shift = 0;
     }
 
     public int getLength() {
@@ -24,6 +25,19 @@ public class Fragment {
 
     public String getFragment() {
         return this.fragment;
+    }
+
+    public int getShift() {
+        return this.shift;
+    }
+
+    public void setShift(int x) {
+        this.shift = x;
+    }
+
+    public void setFragment(String x) {
+        this.fragment = x;
+        this.length = this.fragment.length();
     }
 
     public Fragment reversedComplementary() {
