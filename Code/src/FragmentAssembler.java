@@ -59,8 +59,14 @@ public class FragmentAssembler {
         return fragments;
     }
 
+    /**
+     * This method is used to compute the alignment score between two fragments.
+     *
+     * @param frag1 The first fragment to compare.
+     * @param frag2 The second fragment to compare.
+     * @return An int representing the score of the best alignment.
+     */
     private static int computeScore(String frag1, String frag2) {
-        // on boucle sur les deux strings en meme temps. (sur le min des deux longueurs)
         int score = 0;
         for (int i=0; i < Math.min(frag1.length(), frag2.length()); i++) {
             char a = frag1.charAt(i);
@@ -78,6 +84,11 @@ public class FragmentAssembler {
         return score;
     }
 
+    /**
+     * This method adds the gaps in the "next" fragment in the path, for all fragment.
+     *
+     * @param path The selected path.
+     */
     public static void gaps(List<Edge> path) {
         Edge firstElem = path.get(0);
         ArrayList<Fragment> chemin = firstElem.getChemin();
@@ -101,6 +112,12 @@ public class FragmentAssembler {
         }
     }
 
+    /**
+     * This method is used to compute the consensus on a path.
+     *
+     * @param path The path on which we want to check the consensus.
+     * @return The resulting string of the consensus.
+     */
     private static String consensus(List<Edge> path) {
         Edge firstElem = path.get(0);
         ArrayList<Fragment> chemin = firstElem.getChemin();
@@ -109,7 +126,7 @@ public class FragmentAssembler {
         int startAt;
         int previousLength = 0;
 
-        // iterer sur tous les fragments du chemin
+        // iterate on all fragments of the path.
         for (int i=0; i < chemin.size(); i++) {
             Fragment frag = chemin.get(i);
             if (i != 0) {
@@ -117,13 +134,12 @@ public class FragmentAssembler {
             }
             else {
                 previousLength = chemin.get(0).getLength();
-                System.out.println("Previous Length " + previousLength);
 
             }
             int fragLength = frag.getLength();
             ArrayList<Fragment> superpos = new ArrayList<>();
 
-            // trouver les fragments avec lesquels on peut se superposer
+            // find fragments that overlap.
             for (int j=i+1; j < chemin.size(); j++){
                 if (fragLength - chemin.get(j).getShift() > 0) {
                     fragLength -= chemin.get(j).getShift();
@@ -134,13 +150,11 @@ public class FragmentAssembler {
             String consensused = "";
             ArrayList<String> superposStrings = new ArrayList<>();
             superposStrings.add(frag.getFragment());
-            System.out.println("");
-            System.out.println(">>>>>>>>>>>>>> " + superposStrings.get(0));
             int zeroToAdd = 0;
             for (Fragment frag2 : superpos) {
                 char[] gaps = new char[frag2.getShift()];
                 Arrays.fill(gaps, '-');
-                String newFrag = new String(gaps);
+                String newFrag;
                 zeroToAdd += frag2.getShift();
                 char[] zero = new char[zeroToAdd];
                 Arrays.fill(zero, '0');
@@ -221,7 +235,6 @@ public class FragmentAssembler {
                     consensused += "g";
                 }
             }
-            System.out.println("Consensused : " + consensused);
             consensusedStrings.add(consensused);
         }
         String chaine = consensusedStrings.stream().collect(Collectors.joining(""));
@@ -266,18 +279,16 @@ public class FragmentAssembler {
 
 
     public static void main(String[] args) {
-        // 1. Extraire les fragments
+        // 1. Extract fragments
         Collection collection1 = new Collection(extractFragments(System.getenv("PATH_COLLECTION_1")));
-        // System.out.println(collection1.getCollection()[0]);
-        // 2. Alignement semi-global (matrice)
+        // 2. Perform "semi-global" alignment
         Graph graph = new Graph(collection1);
         List<Edge> path = graph.greedy();
         // 3. Gaps
         gaps(path);
         // 4. Consensus
         String chaine = consensus(path);
-        // 5. afficher la chaine
-        System.out.println("taille de la chaine : "+ chaine.length());
+        // 5. Print the string
         System.out.println(chaine);
         writeFile(chaine);
     }

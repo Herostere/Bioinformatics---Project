@@ -1,33 +1,46 @@
 import java.util.*;
 
+/**
+ * This class is used to describe a graph.
+ */
 public class Graph {
     private List<Fragment> nodes;
     private List<Edge> edges;
-    private final int m; // nbre d'arcs
-    private final int n; //nbre de noeuds
-
-    private static int numberOfOverlap = 0;
+    private final int m; // number of edges
+    private final int n; // number of nodes
 
     public Graph (Collection fragments){
         n = fragments.getCollection().length * 2;
         m = n * (n - 2);
 
         nodes = constructorNodes(fragments);
-        edges = constructorEdges(nodes);// constructeur d arc
+        edges = constructorEdges(nodes);
     }
 
+    /**
+     * This method is used to construct the nodes of a graph.
+     *
+     * @param fragments A collection of fragments.
+     * @return A list of Fragments.
+     */
     public List<Fragment> constructorNodes(Collection fragments){
-        List<Fragment> nodesList = new ArrayList<>(n); //verifier si garder arraylist ou passer en tableau
+        List<Fragment> nodesList = new ArrayList<>(n);
         nodesList.addAll(Arrays.asList(fragments.getCollection()));
         for (Fragment fragment : Arrays.asList(fragments.getCollection())){
-            Fragment inverse = fragment.reversedComplementary(); //calcul inverse d'un fragment
+            Fragment inverse = fragment.reversedComplementary();
             nodesList.add(inverse);
         }
         return nodesList;
     }
 
+    /**
+     * This method is used to construct the edeges of a graph.
+     *
+     * @param nodes A collection of fragments.
+     * @return A list of Edges.
+     */
     public List<Edge> constructorEdges(List<Fragment> nodes){
-        List<Edge> edgesList = new ArrayList<>(m); // TODO verifier si garder arraylist ou passer en tableau
+        List<Edge> edgesList = new ArrayList<>(m);
         for (Fragment src : nodes){
             int indiceSrc = nodes.indexOf(src);
             for (Fragment dest : nodes){
@@ -41,20 +54,26 @@ public class Graph {
         return edgesList;
     }
 
+    /**
+     * This method is used to get the overlap Graph.
+     *
+     * @param f A first fragment
+     * @param g A second fragment
+     *
+     * @return A two dimension tab representing the overlap graph.
+     */
     public static int[][] getOverlapGraph(Fragment f, Fragment g) {
-        numberOfOverlap++;
-        System.out.print(numberOfOverlap + "\r");
         int matriceSizeLong = f.getLength();
         int matriceSizeLarg = g.getLength();
 
         int[][] overlapGraph = new int[matriceSizeLong + 1][matriceSizeLarg + 1];
 
 
-        for(int i = 0; i < matriceSizeLong; i++){ // +1 maybe
+        for(int i = 0; i < matriceSizeLong; i++){
             overlapGraph[i][0] = 0;
         }
 
-        for(int i = 0; i < matriceSizeLarg; i++){ // +1 maybe
+        for(int i = 0; i < matriceSizeLarg; i++){
             overlapGraph[0][i] = 0;
         }
 
@@ -73,6 +92,11 @@ public class Graph {
         return overlapGraph;
     }
 
+    /**
+     * This method is used to perform the greedy algorithm.
+     *
+     * @return The list of edges that are in the path.
+     */
     public List<Edge> greedy(){
         int[] in = new int[n];
         int[] out = new int[n];
@@ -107,6 +131,11 @@ public class Graph {
         return chemin;
     }
 
+    /**
+     * This method is used to sort (from max to low) the edges on a List using the Bubble sort algorithm.
+     *
+     * @param edges The list to must be sorted.
+     */
     private void bubbleReverseSort(List<Edge> edges) {
         for (int i = 0; i < this.n  -1; i++) {
             for (int j = 0; j < this.n - i - 1; j++) {
@@ -119,6 +148,13 @@ public class Graph {
         }
     }
 
+    /**
+     * This method is used to do the union between a path and an edge.
+     *
+     * @param chem The path on which perform the union.
+     * @param arc The edge on which perform the union.
+     * @return The list representing the united path and edge.
+     */
     public List<Edge> union(List<Edge> chem, Edge arc){
         List<Edge> chemin = chem;
         int flag = 0;
@@ -126,7 +162,6 @@ public class Graph {
             chemin.add(arc);
             return chemin;
         }
-//        for (Edge edges : chem) {
         for (int i = 0; i < chem.size(); i++) {
             Edge edges = chem.get(i);
             if (edges.getDest() == arc.getSrc()){
