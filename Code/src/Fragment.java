@@ -1,22 +1,16 @@
 /**
  * This class is used to define a fragment.
  */
-
-import java.util.HashSet;
-import java.util.Set;
-
 public class Fragment {
 
     private int length;
     private String fragment;
     private int shift;
-    // private SuffixTree suffixTree;
-    // stock the inverse of a fragment
 
     public Fragment(String fragment) {
         this.length = fragment.length();
         this.fragment = fragment;
-        this.shift = 0;
+        this.shift = 0; // representing the best shifting for the alignment
     }
 
     public int getLength() {
@@ -35,11 +29,11 @@ public class Fragment {
         this.shift = x;
     }
 
-    public void setFragment(String x) {
-        this.fragment = x;
-        this.length = this.fragment.length();
-    }
-
+    /**
+     * This function is used to compute the reversed complementary of a nucleotide.
+     *
+     * @return A fragment representing the reversed complementary of another fragment.
+     */
     public Fragment reversedComplementary() {
         String[] fragmentArray = this.fragment.split("");
         StringBuilder complementary = new StringBuilder();

@@ -1,21 +1,18 @@
 import java.util.ArrayList;
 
+/**
+ * This class describes an Edge.
+ */
 public class Edge {
-    Fragment src;
-    Fragment dest;
-    int weight;
-    ArrayList<Fragment> chemin;
+    private Fragment src;
+    private Fragment dest;
+    private int weight;
+    private ArrayList<Fragment> chemin;
 
     public Edge(Fragment src, Fragment dest){
         this.src = src;
         this.dest = dest;
         this.weight = weight();
-    }
-
-    public Edge(Fragment src, Fragment dest, int x) {
-        this.src = src;
-        this.dest = dest;
-        this.chemin = chemin;
     }
 
     public Edge(Fragment src, Fragment dest, ArrayList<Fragment> chemin) {
@@ -24,7 +21,12 @@ public class Edge {
         this.chemin = chemin;
     }
 
-    public int weight() {  //calcul du poids
+    /**
+     * This method is used to compute the weight of an edge.
+     *
+     * @return An int representing the weight of the edge.
+     */
+    public int weight() {
         int[][] overlapGraph = Graph.getOverlapGraph(this.src, this.dest);
         int i = this.src.getLength();
         int j = this.dest.getLength();
@@ -41,8 +43,17 @@ public class Edge {
 
         return maximum;
     }
-    public void setChemin(ArrayList<Fragment> chemin) {
-        this.chemin = chemin;
+
+    public Fragment getSrc() {
+        return this.src;
+    }
+
+    public Fragment getDest() {
+        return this.dest;
+    }
+
+    public int getWeight() {
+        return this.weight;
     }
 
     public ArrayList<Fragment> getChemin() {

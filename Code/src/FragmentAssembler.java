@@ -80,7 +80,7 @@ public class FragmentAssembler {
 
     public static void gaps(List<Edge> path) {
         Edge firstElem = path.get(0);
-        ArrayList<Fragment> chemin = firstElem.chemin;
+        ArrayList<Fragment> chemin = firstElem.getChemin();
 
         for (int i=0; i < chemin.size()-1; i++) {
             int score = 0;
@@ -103,7 +103,7 @@ public class FragmentAssembler {
 
     private static String consensus(List<Edge> path) {
         Edge firstElem = path.get(0);
-        ArrayList<Fragment> chemin = firstElem.chemin;
+        ArrayList<Fragment> chemin = firstElem.getChemin();
         ArrayList<String> consensusedStrings = new ArrayList<>();
 
         int startAt;
