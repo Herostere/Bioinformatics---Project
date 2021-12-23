@@ -98,8 +98,8 @@ public class Graph {
      * @return The list of edges that are in the path.
      */
     public List<Edge> greedy(){
-        int[] in = new int[n];
-        int[] out = new int[n];
+        byte[] in = new byte[n];
+        byte[] out = new byte[n];
         List<Edge> chemin = new ArrayList<>();
         bubbleReverseSort(edges);
 
