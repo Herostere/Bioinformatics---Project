@@ -43,9 +43,10 @@
     <property name="settings.editor.selected.configurable" value="preferences.keymap" />
   </component>
   <component name="RunManager">
-    <configuration name="Unnamed" type="Application" factoryName="Application" nameIsGenerated="true">
+    <configuration name="FragmentAssembler" type="Application" factoryName="Application" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="FragmentAssembler" />
       <module name="Code" />
+      <option name="PROGRAM_PARAMETERS" value="&quot;D:\Storage D\University\2021-2022\Bioinformatics-Project\Statement\Collections\10000\collection1.fasta&quot; -out &quot;D:\Storage D\University\2021-2022\Bioinformatics-Project\Code\src\output.fasta&quot; -out-ic &quot;lol&quot;" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
