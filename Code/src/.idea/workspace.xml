@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="ArtifactsWorkspaceSettings">
+    <artifacts-to-build>
+      <artifact name="Code:jar" />
+    </artifacts-to-build>
+  </component>
   <component name="ChangeListManager">
     <list default="true" id="89cd4027-b44d-40a8-84ed-353ee4cc4a58" name="Changes" comment="" />
     <list id="6c46f3dc-94b7-4376-b768-f2881ca20a44" name="Changes by guill" comment="" />
@@ -36,6 +41,16 @@
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.2" />
     <property name="settings.editor.selected.configurable" value="preferences.keymap" />
+  </component>
+  <component name="RunManager">
+    <configuration name="FragmentAssembler" type="Application" factoryName="Application" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="FragmentAssembler" />
+      <module name="Code" />
+      <option name="PROGRAM_PARAMETERS" value="&quot;D:\Storage D\University\2021-2022\Bioinformatics-Project\Statement\Collections\10000\collection1.fasta&quot; -out &quot;D:\Storage D\University\2021-2022\Bioinformatics-Project\Code\src\output.fasta&quot; -out-ic &quot;lol&quot;" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">

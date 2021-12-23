@@ -2,11 +2,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.regex.Pattern;
-import java.util.Scanner;
-import java.util.List;
-import java.util.Arrays;
 import java.util.stream.Collectors;
 
 /**
@@ -15,6 +12,7 @@ import java.util.stream.Collectors;
 public class FragmentAssembler {
 
     private static ArrayList<Fragment> fragments;
+    private static String collectionNumber = "";
 
     /**
      * This method is used to extract the fragments from the fasta file.
@@ -38,6 +36,11 @@ public class FragmentAssembler {
 
                 while (reader.hasNextLine()) {
                     if (newFragment) {
+                        if (Objects.equals(collectionNumber, "")) {
+                            collectionNumber = data.substring(data.indexOf('c'));
+                            char first = Character.toUpperCase(collectionNumber.charAt(0));
+                            collectionNumber = first + collectionNumber.substring(1);
+                        }
                         StringBuilder fragment = new StringBuilder();
                         data = reader.nextLine();
                         newFragment = pattern.matcher(data).find();
@@ -241,9 +244,9 @@ public class FragmentAssembler {
         return chaine;
     }
 
-    public static void writeFile(String chaine) {
+    public static void writeFile(String chaine, String pathOutput) {
         try {
-            FileWriter myWriter = new FileWriter(System.getenv("PATH_OUTPUT_1"));
+            FileWriter myWriter = new FileWriter(pathOutput);
             int splits;
             if (chaine.length() % 80 == 0){
                 splits = chaine.length() / 80;
@@ -265,7 +268,7 @@ public class FragmentAssembler {
                 currentIndex += 80;
             }
 
-            myWriter.write(">Output");
+            myWriter.write("> Groupe-1 " + collectionNumber + " Longueur " + chaine.length());
             for (String strings : stringSplits) {
                 myWriter.write(strings);
             }
@@ -279,17 +282,36 @@ public class FragmentAssembler {
 
 
     public static void main(String[] args) {
-        // 1. Extract fragments
-        Collection collection1 = new Collection(extractFragments(System.getenv("PATH_COLLECTION_1")));
-        // 2. Perform "semi-global" alignment
-        Graph graph = new Graph(collection1);
-        List<Edge> path = graph.greedy();
-        // 3. Gaps
-        gaps(path);
-        // 4. Consensus
-        String chaine = consensus(path);
-        // 5. Print the string
-        System.out.println(chaine);
-        writeFile(chaine);
+        String pathInput = "";
+        String pathOutput = "";
+        String pathOutputIC = "";
+
+        if (args.length==5) {
+            pathInput = args[0];
+            if (args[1].equals("-out")) {
+                pathOutput = args[2];
+            }
+            else {
+                System.exit(1);
+            }
+            if (args[3].equals("-out-ic")) {
+                pathOutputIC = args[4];
+            }
+            else {
+                System.exit(1);
+            }
+            // 1. Extract fragments
+            Collection collection1 = new Collection(extractFragments(pathInput));
+            // 2. Perform "semi-global" alignment
+            Graph graph = new Graph(collection1);
+            List<Edge> path = graph.greedy();
+            // 3. Gaps
+            gaps(path);
+            // 4. Consensus
+            String chaine = consensus(path);
+            // 5. Print the string
+            System.out.println(chaine);
+            writeFile(chaine, pathOutput);
+        }
     }
 }
