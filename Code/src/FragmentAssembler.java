@@ -280,6 +280,25 @@ public class FragmentAssembler {
         }
     }
 
+    private static String reversedComplementaryString(String string) {
+        String[] fragmentArray = string.split("");
+        StringBuilder complementary = new StringBuilder();
+        String reverseComplementary;
+
+        for (String str : fragmentArray) {
+            switch (str) {
+                case "A" -> complementary.append("T");
+                case "T" -> complementary.append("A");
+                case "C" -> complementary.append("G");
+                case "G" -> complementary.append("C");
+                default -> complementary.append("-");
+            }
+        }
+
+        reverseComplementary = new StringBuilder(complementary).reverse().toString();
+        return reverseComplementary;
+    }
+
 
     public static void main(String[] args) {
         String pathInput = "";
@@ -311,6 +330,7 @@ public class FragmentAssembler {
             String chaine = consensus(path);
             // 5. Print the string
             System.out.println(chaine);
+            String chaineIC = reversedComplementaryString(chaine);
             writeFile(chaine, pathOutput);
         }
     }
