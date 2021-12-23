@@ -332,6 +332,7 @@ public class FragmentAssembler {
             System.out.println(chaine);
             String chaineIC = reversedComplementaryString(chaine);
             writeFile(chaine, pathOutput);
+            writeFile(chaineIC, pathOutputIC);
         }
     }
 }
