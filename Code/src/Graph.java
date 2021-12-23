@@ -1,4 +1,3 @@
-import java.sql.Array;
 import java.util.*;
 
 public class Graph {
@@ -6,6 +5,8 @@ public class Graph {
     private List<Edge> edges;
     private final int m; // nbre d'arcs
     private final int n; //nbre de noeuds
+
+    private static int numberOfOverlap = 0;
 
     public Graph (Collection fragments){
         n = fragments.getCollection().length * 2;
@@ -26,7 +27,7 @@ public class Graph {
     }
 
     public List<Edge> constructorEdges(List<Fragment> nodes){
-        List<Edge> edgesList = new ArrayList<>(m); //verifier si garder arraylist ou passer en tableau
+        List<Edge> edgesList = new ArrayList<>(m); // TODO verifier si garder arraylist ou passer en tableau
         for (Fragment src : nodes){
             int indiceSrc = nodes.indexOf(src);
             for (Fragment dest : nodes){
@@ -41,17 +42,20 @@ public class Graph {
     }
 
     public static int[][] getOverlapGraph(Fragment f, Fragment g) {
+        numberOfOverlap++;
+        System.out.print(numberOfOverlap + "\r");
         int matriceSizeLong = f.getLength();
         int matriceSizeLarg = g.getLength();
 
         int[][] overlapGraph = new int[matriceSizeLong + 1][matriceSizeLarg + 1];
 
-        for(int i = 0; i < matriceSizeLong+1; i++){
-            overlapGraph[0][i] = 0;
+
+        for(int i = 0; i < matriceSizeLong; i++){ // +1 maybe
+            overlapGraph[i][0] = 0;
         }
 
-        for(int i = 0; i < matriceSizeLarg+1; i++){
-            overlapGraph[i][0] = 0;
+        for(int i = 0; i < matriceSizeLarg; i++){ // +1 maybe
+            overlapGraph[0][i] = 0;
         }
 
         for (int i = 1; i < matriceSizeLong; i++) {
@@ -80,26 +84,28 @@ public class Graph {
                 in[nodes.indexOf(arc.dest)] = 1;
                 out[nodes.indexOf(arc.src)] = 1;
                 if (nodes.indexOf(arc.dest) < n/2){
-                    in[nodes.indexOf(arc.dest) + n] = 1;
+                    in[nodes.indexOf(arc.dest) + n/2] = 1;
                 }
                 else{
-                    in[nodes.indexOf(arc.dest) - n] = 1;
+                    in[nodes.indexOf(arc.dest) - n/2] = 1;
                 }
                 if (nodes.indexOf(arc.src) < n/2){
-                    out[nodes.indexOf(arc.src) + n] = 1;
+                    out[nodes.indexOf(arc.src) + n/2] = 1;
                 }
                 else{
-                    out[nodes.indexOf(arc.src) - n] = 1;
+                    out[nodes.indexOf(arc.src) - n/2] = 1;
                 }
+
                 ArrayList<Fragment> newFragments = new ArrayList<>();
                 newFragments.add(arc.src);
                 newFragments.add(arc.dest);
                 Edge edges = new Edge(arc.src,arc.dest, newFragments);
+
                 chemin = union(chemin, edges);
             }
-            if (chemin.size() == 1){
-                break;
-            }
+//            if (chemin.size() == 1){
+//                break;
+//            }
         }
         return chemin;
     }
@@ -123,9 +129,11 @@ public class Graph {
             chemin.add(arc);
             return chemin;
         }
-        for (Edge edges : chem){
+//        for (Edge edges : chem) {
+        for (int i = 0; i < chem.size(); i++) {
+            Edge edges = chem.get(i);
             if (edges.dest == arc.src){
-                edges.chemin.remove(chemin.size()-1);
+                edges.getChemin().remove(edges.getChemin().size()-1);
                 ArrayList<Fragment> newArrayList = new ArrayList<>(edges.chemin);
                 newArrayList.addAll(arc.chemin);
                 Edge temp = new Edge(edges.src, arc.dest, newArrayList);
@@ -133,12 +141,11 @@ public class Graph {
                 flag += 1;
             }
             else if (edges.src == arc.dest){
-
-                arc.chemin.remove(chemin.size()-1);
+                arc.getChemin().remove(arc.getChemin().size()-1);
                 ArrayList<Fragment> newArrayList = new ArrayList<>(arc.chemin);
                 newArrayList.addAll(edges.chemin);
 
-                Edge temp = new Edge(arc.src, edges.dest,newArrayList);
+                Edge temp = new Edge(arc.src, edges.dest, newArrayList);
                 chemin.add(temp);
                 flag += 1;
             }

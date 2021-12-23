@@ -1,0 +1,142 @@
+\documentclass[a4paper, 12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[francais]{babel}
+\usepackage[pdftex]{graphicx}
+\begin{document}
+\begin{titlepage}
+\begin{center}
+
+{\Large Université de Mons}\\[1ex]
+{\Large Faculté des sciences}\\[1ex]
+{\Large Département d'Informatique}\\[2.5cm]
+
+\newcommand{\HRule}{\rule{\linewidth}{0.3mm}}
+% Title
+\HRule \\[0.3cm]
+{ \LARGE \bfseries Algorithmique et bioinformatique \\[0.3cm]}
+{ \LARGE \bfseries Rapport de projet \\[0.1cm]} % Commenter si pas besoin
+\HRule \\[1.5cm]
+
+% Author and supervisor
+\begin{minipage}[t]{0.45\textwidth}
+\begin{flushleft} \large
+\emph{Professeur:}\\
+Olivier \textsc{Delgrange}\\
+Clément \textsc{Tamines}
+\end{flushleft}
+\end{minipage}
+\begin{minipage}[t]{0.45\textwidth}
+\begin{flushright} \large
+\emph{Auteur:} \\
+Laurent \textsc{Bossart}\\
+Guillaume \textsc{Proot}
+\end{flushright}
+\end{minipage}\\[2ex]
+
+\vfill
+
+% Bottom of the page
+\begin{center}
+\begin{tabular}[t]{c c c}
+\includegraphics[height=1.5cm]{logoumons.jpg} &
+\hspace{0.3cm} &
+\includegraphics[height=1.5cm]{logofs.jpg}
+\end{tabular}
+\end{center}~\\
+ 
+{\large Année académique 2021-2022}
+
+\end{center}
+\end{titlepage}
+
+\tableofcontents
+
+\newpage
+
+\section{Introduction}
+
+	Dans le cadre du cours de bioinformatique, il nous été proposé comme projet d'implémenter un programme permettant de reconstituer une séquence ADN à partir d'un ensemble de fragments. Ce programme se divise en plusieurs parties et celles-ci seront expliquées tout le long du rapport.\\
+
+ 
+	Tout d'abord, il nous faut récuperer un ensemble de fragments d'ADN contenu dans un fichier et dans notre cas c'est la classe \textit{FragmentAssembler} qui s'en occupe en chargeant un fichier \textit{.fasta} et en instanciant un objet \textit{Collection} contenant l'ensemble des fragments d'ADN.\\
+
+	Ensuite, on construit un graphe à partir de l'ensemble de ces fragments. Ce graphe est caractérisé par un ensemble de noeuds représentant chacun un fragment et un ensemble d'arc représentant la similarité entre les fragments. Ce graphe fait intervenir les classes suivantes de notre programme : \textit{Graph} et \textit{Edge} principalement. Certains problèmes ont été rencontrés lors de la conception de celui-ci et seront détaillés par la suite.\\
+
+	Une fois le graphe obtenu, nous avons appliqué un algorithme \textit{Greedy} (c'est à dire une approche gloutonne) afin de calculer le chemin Hamiltonien de ce graphe. Pour cette recherche de chemin tout se déroule dans la classe \textit{Graph}. Et en résulte de cet algo une liste contenant un objet \textit{Edge} contenant le chemin Hamiltonien.\\
+
+	Une fois que le chemin est obtenu, il nous a fallu ensuite propager les gaps et les décalages aux différents fragments. Cela ce fait dans la classe \textit{FragmentAssembler}\\
+
+	Pour finir, nous avons appliqué un consensus qui se traduit par un vote par majorité afin de pouvoir recréer notre séquence finale qui est enregistrée dans un fichier \textit{.fasta} .
+\newpage
+\section{Récupération des fragments}
+
+%TODO Laurent
+\section{Construction de l' \textit{Overlap Multigraph}}
+
+	\subsection{Création de la liste des noeuds}
+		Comme dit précédemment, les noeuds du graphe sont les fragments récupérés dans l'étape précédente. Il ne faut pas non plus oublier de considérer les complémentaires-inversés de chaque fragment. C'est pourquoi pour $k$ fragments, il y a $ n = k * 2$ noeuds dans le graphe.
+	
+	\subsection{Création de la liste d'arc}
+		Les arcs du graphe font le lien entre chaque noeud du graphe ecxepté eux-meme et leur complémentaire inversé c'est pourquoi pour un graphe contenant $n$ noeuds, on va pouvoir trouver $m$ arcs tel que $ m = n * (n-2)$ . De plus chaque arc possède un poid qui est la similitude entre le noeud de départ et le noeud d'arrivée. Cette similitude est calculée à partir de la chaine de caractère commune maximale entre la fin du fragment de départ et le début du fragment d'arrivée.
+			
+	\subsubsection{Calcul de poid d'un arc}
+		Pour calculer ce poid c'est à dire le chevauchement entre les deux noeuds que l'arc courant relie, nous avons implémenté une matrice d'assemblage (voir \textit{getOverlapGraph} dans la classe \textit{Graph}). Dans cette algorithme, nous avons utilisé comme demandé dans les consignes l'aligment semi-global c'est à dire que nous avons créé une matrice où notre première ligne et première colonne sont des 0 et que l'alignement ce trouve par backtracking. Cet algorithme nous retourne donc le score du meilleur alignement et ce score sera donc le poid de notre arc.
+	
+	\subsection{Optimisation apportée}
+	  %TODO
+
+\section{Calcul du chemin Hamiltonien}
+	Lors de la présentation du projet, il nous a été proposé d'utilisé une heuristique \textit{greedy} afin de trouver le chemin hamiltonien dans notre graphe. En effet, nous avons vu dans nos cours de bachelier que l'algorithme du calcul exact d'un chemin hamiltonien était un problème dit \textit{NP-complet} c'est pourquoi au vu de la taille de notre problème à résoudre un algorithme d'approximation s'avère nécessaire. Le principe de cet algorithme est d'ajouter chaque paire de noeud selon le poid de leur arc (poid dans l'ordre décroissant) jusqu'à ce que le chemin contienne tous les noeuds possibles (c'est à dire si un chemin contient un certain noeud il ne peut pas contenir son complémentaire-inversé).\\
+	
+	Dans notre code, cet algorithme se trouve dans la classe \textit{Graph} et se base sur le graphe créé précédemment (voir section 3) et va nous ressortir une liste contenant un arc spécial qui contient le chemin hamiltonien.\\
+	
+	
+
+
+\section{Gestion des gaps}
+	Pour gérer les gaps c'est à dire ajouter un certain nombre de gaps en début de fragment afin que le fragment soit le mieux aligné possible avec le précédent nous avons créé une fonction \textit{gaps} se trouvant dans la classe \textit{FragmentAssembler} et modifie chaque fragment se trouvant dans le chemin hamiltonien (voir section 4) afin de lui ajouter un certain nombre de gaps représenté par la variable $shift$.\\
+	
+	Pour ce faire, On va parcourir l'ensemble des fragments en le comparant avec le fragment suivant. Pour chaque paire de fagment, on va comparer chaque nucléotide entre eux afin d'obtenir un score (voir sous-section calcul de score) et on retiendra le décalage ayant obtenu le meilleur score afin de déterminer le nombre de gaps à ajouter à chaque fragment.
+	
+	\subsection{Calcul de score}
+		Lors du calcul du score d'alignement entre deux fragments, nous allons parcourir les deux fragments nucléotide par nucléotide sur le minimum de la longueur des deux fragments et pour chaque comparaison, trois cas sont possibles : 
+		\begin{enumerate}
+			\item Dans le premier cas, soit le nucléotide du fragment 1 ou le nucléotide du fragment est un gaps. Dans ce cas là nous avons choisi d'ajouter 0 au score.
+			\item Il est possible que les deux nucléotides comparés soient différents dans ce cas là nous avons affaire à un \textit{missmatch} et donc nous décrémentons le score de 1.
+			\item Enfin, si les deux nucléotides comparés sont égaux, nous allons incrémenter le score de 1.
+		\end{enumerate}
+		Au final, nous aurons un entier qui sera le score de chaque comparaison de l'alignement actuel des deux fragments.
+	\subsection{Optimisation apportée}
+\section{Consensus}
+
+%TODO Laurent
+
+\section{Résultats obtenus}
+%TODO
+\section{Remarques}
+
+	\subsection{Points forts}
+	%TODO
+	\subsection{Points faibles}
+
+		Un point faible de notre algorithme se trouve dans le calcul des arcs. En effet, lors de la création de notre graphe nous calculons tous les poids de tous les arcs à l'aide de l'alignement semi-global ce qui est très couteux en temps. Une manière de remédier à ce problème pourrait être de parralléliser le calcul des poids des arcs afin de réduire drastiquement le temps d'exécution.\\
+		
+		%TODO
+	
+	\subsection{Répartition des tâches}
+	
+	La répartion des tâches de ce projet c'est fait de la manière suivante :\\
+	Laurent : \begin{itemize}
+		\item[-] Lecture et écriture des fichiers
+		\item[-] Report de Gaps
+		\item[-] Consensus
+	\end{itemize}
+	Guillaume : \begin{itemize}
+		\item[-] Graphe
+		\item[-] Alignement semi-global
+		\item[-] Algorithme Greedy
+	\end{itemize}
+	Cette répartition est assez approximative, en effet, pour de nombreux points, les deux parties se sont entraidées lors de leurs parties respectives. De plus pour permettre un projet plus cohérent et complèt, les points importants ont été réfléchis en commun.
+\section{Conclusion}
+%TODO
+\end{document}

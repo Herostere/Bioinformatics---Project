@@ -41,4 +41,11 @@ public class Edge {
 
         return maximum;
     }
+    public void setChemin(ArrayList<Fragment> chemin) {
+        this.chemin = chemin;
+    }
+
+    public ArrayList<Fragment> getChemin() {
+        return chemin;
+    }
 }

@@ -1,0 +1,19 @@
+\babel@toc {french}{}
+\contentsline {section}{\numberline {1}Introduction}{2}%
+\contentsline {section}{\numberline {2}Récupération des fragments}{3}%
+\contentsline {section}{\numberline {3}Construction de l' \textit {Overlap Multigraph}}{3}%
+\contentsline {subsection}{\numberline {3.1}Création de la liste des noeuds}{3}%
+\contentsline {subsection}{\numberline {3.2}Création de la liste d'arc}{3}%
+\contentsline {subsubsection}{\numberline {3.2.1}Calcul de poid d'un arc}{3}%
+\contentsline {subsection}{\numberline {3.3}Optimisation apportée}{3}%
+\contentsline {section}{\numberline {4}Calcul du chemin Hamiltonien}{3}%
+\contentsline {section}{\numberline {5}Gestion des gaps}{4}%
+\contentsline {subsection}{\numberline {5.1}Calcul de score}{4}%
+\contentsline {subsection}{\numberline {5.2}Optimisation apportée}{5}%
+\contentsline {section}{\numberline {6}Consensus}{5}%
+\contentsline {section}{\numberline {7}Résultats obtenus}{5}%
+\contentsline {section}{\numberline {8}Remarques}{5}%
+\contentsline {subsection}{\numberline {8.1}Points forts}{5}%
+\contentsline {subsection}{\numberline {8.2}Points faibles}{5}%
+\contentsline {subsection}{\numberline {8.3}Répartition des tâches}{5}%
+\contentsline {section}{\numberline {9}Conclusion}{6}%

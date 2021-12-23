@@ -1,5 +1,7 @@
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.regex.Pattern;
 import java.util.Scanner;
@@ -104,13 +106,6 @@ public class FragmentAssembler {
         ArrayList<Fragment> chemin = firstElem.chemin;
         ArrayList<String> consensusedStrings = new ArrayList<>();
 
-        // ajout des gaps
-//        for (Fragment fragments : chemin){
-//            char[] gaps = new char[fragments.getShift()];
-//            Arrays.fill(gaps, '-');
-//            fragments.setFragment(gaps+fragments.getFragment());
-//        }
-
         int startAt;
         int previousLength = 0;
 
@@ -122,6 +117,8 @@ public class FragmentAssembler {
             }
             else {
                 previousLength = chemin.get(0).getLength();
+                System.out.println("Previous Length " + previousLength);
+
             }
             int fragLength = frag.getLength();
             ArrayList<Fragment> superpos = new ArrayList<>();
@@ -137,6 +134,8 @@ public class FragmentAssembler {
             String consensused = "";
             ArrayList<String> superposStrings = new ArrayList<>();
             superposStrings.add(frag.getFragment());
+            System.out.println("");
+            System.out.println(">>>>>>>>>>>>>> " + superposStrings.get(0));
             int zeroToAdd = 0;
             for (Fragment frag2 : superpos) {
                 char[] gaps = new char[frag2.getShift()];
@@ -163,6 +162,9 @@ public class FragmentAssembler {
             }
 
             startAt = frag.getLength() - remain;
+            if (remain == 0) {
+                startAt = 0;
+            }
             for (int j=startAt; j < frag.getFragment().length(); j++) {
                 int countA = 0;
                 int countC = 0;
@@ -219,19 +221,54 @@ public class FragmentAssembler {
                     consensused += "g";
                 }
             }
+            System.out.println("Consensused : " + consensused);
             consensusedStrings.add(consensused);
         }
         String chaine = consensusedStrings.stream().collect(Collectors.joining(""));
-
         return chaine;
     }
 
+    public static void writeFile(String chaine) {
+        try {
+            FileWriter myWriter = new FileWriter(System.getenv("PATH_OUTPUT_1"));
+            int splits;
+            if (chaine.length() % 80 == 0){
+                splits = chaine.length() / 80;
+            }
+            else {
+                splits = (chaine.length() / 80) + 1;
+            }
+            String[] stringSplits = new String[splits];
+            int currentIndex = 0;
+            for (int i = 0; i < splits; i++) {
+                int endIndex;
+                if ((currentIndex + 80) < chaine.length()) {
+                    endIndex = currentIndex + 80;
+                }
+                else {
+                    endIndex = chaine.length();
+                }
+                stringSplits[i] = chaine.substring(currentIndex, endIndex);
+                currentIndex += 80;
+            }
+
+            myWriter.write(">Output");
+            for (String strings : stringSplits) {
+                myWriter.write(strings);
+            }
+            myWriter.close();
+        }
+        catch (IOException e) {
+            System.out.println("Error");
+            e.printStackTrace();
+        }
+    }
 
 
-public static void main(String[] args) {
+    public static void main(String[] args) {
         // 1. Extraire les fragments
         Collection collection1 = new Collection(extractFragments(System.getenv("PATH_COLLECTION_1")));
-        System.out.println(collection1.getCollection()[0]);
+        // System.out.println(collection1.getCollection()[0]);
         // 2. Alignement semi-global (matrice)
         Graph graph = new Graph(collection1);
         List<Edge> path = graph.greedy();
@@ -240,7 +277,8 @@ public static void main(String[] args) {
         // 4. Consensus
         String chaine = consensus(path);
         // 5. afficher la chaine
+        System.out.println("taille de la chaine : "+ chaine.length());
         System.out.println(chaine);
-
+        writeFile(chaine);
     }
 }
