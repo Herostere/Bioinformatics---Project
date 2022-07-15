@@ -321,8 +321,9 @@ public class FragmentAssembler {
             }
             // 1. Extract fragments
             Collection collection1 = new Collection(extractFragments(pathInput));
-            // 2. Perform "semi-global" alignment
+            // 2. Construction of the graph
             Graph graph = new Graph(collection1);
+            // 3. Perform "semi-global" alignment (computation of Hamiltonian path?)
             List<Edge> path = graph.greedy();
             // 3. Gaps
             gaps(path);

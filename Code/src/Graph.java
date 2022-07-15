@@ -6,12 +6,12 @@ import java.util.*;
 public class Graph {
     private List<Fragment> nodes;
     private List<Edge> edges;
-    private final int m; // number of edges
-    private final int n; // number of nodes
+    private final int numberOfEdges;
+    private final int numberOfNodes;
 
     public Graph (Collection fragments){
-        n = fragments.getCollection().length * 2;
-        m = n * (n - 2);
+        numberOfNodes = fragments.getCollection().length * 2;
+        numberOfEdges = numberOfNodes * (numberOfNodes - 2);
 
         nodes = constructorNodes(fragments);
         edges = constructorEdges(nodes);
@@ -24,7 +24,7 @@ public class Graph {
      * @return A list of Fragments.
      */
     public List<Fragment> constructorNodes(Collection fragments){
-        List<Fragment> nodesList = new ArrayList<>(n);
+        List<Fragment> nodesList = new ArrayList<>(numberOfNodes);
         nodesList.addAll(Arrays.asList(fragments.getCollection()));
         for (Fragment fragment : Arrays.asList(fragments.getCollection())){
             Fragment inverse = fragment.reversedComplementary();
@@ -34,18 +34,18 @@ public class Graph {
     }
 
     /**
-     * This method is used to construct the edeges of a graph.
+     * This method is used to construct the edges of a graph.
      *
      * @param nodes A collection of fragments.
      * @return A list of Edges.
      */
     public List<Edge> constructorEdges(List<Fragment> nodes){
-        List<Edge> edgesList = new ArrayList<>(m);
+        List<Edge> edgesList = new ArrayList<>(numberOfEdges);
         for (Fragment src : nodes){
             int indiceSrc = nodes.indexOf(src);
             for (Fragment dest : nodes){
 
-                if (nodes.indexOf(dest) != indiceSrc && nodes.indexOf(dest) != indiceSrc + (this.n/2) ){
+                if (nodes.indexOf(dest) != indiceSrc && nodes.indexOf(dest) != indiceSrc + (this.numberOfNodes /2) ){
                     Edge edge = new Edge(src,dest);
                     edgesList.add(edge);
                 }
@@ -98,26 +98,26 @@ public class Graph {
      * @return The list of edges that are in the path.
      */
     public List<Edge> greedy(){
-        byte[] in = new byte[n];
-        byte[] out = new byte[n];
+        byte[] in = new byte[numberOfNodes];
+        byte[] out = new byte[numberOfNodes];
         List<Edge> chemin = new ArrayList<>();
-        bubbleReverseSort(edges);
+        bubbleReverseSort(edges); //TODO changer tri
 
         for (Edge arc : edges){
             if(in[nodes.indexOf(arc.getDest())] == 0 && out[nodes.indexOf(arc.getSrc())] == 0){
                 in[nodes.indexOf(arc.getDest())] = 1;
                 out[nodes.indexOf(arc.getSrc())] = 1;
-                if (nodes.indexOf(arc.getDest()) < n/2){
-                    in[nodes.indexOf(arc.getDest()) + n/2] = 1;
+                if (nodes.indexOf(arc.getDest()) < numberOfNodes /2){
+                    in[nodes.indexOf(arc.getDest()) + numberOfNodes /2] = 1;
                 }
                 else{
-                    in[nodes.indexOf(arc.getDest()) - n/2] = 1;
+                    in[nodes.indexOf(arc.getDest()) - numberOfNodes /2] = 1;
                 }
-                if (nodes.indexOf(arc.getSrc()) < n/2){
-                    out[nodes.indexOf(arc.getSrc()) + n/2] = 1;
+                if (nodes.indexOf(arc.getSrc()) < numberOfNodes /2){
+                    out[nodes.indexOf(arc.getSrc()) + numberOfNodes /2] = 1;
                 }
                 else{
-                    out[nodes.indexOf(arc.getSrc()) - n/2] = 1;
+                    out[nodes.indexOf(arc.getSrc()) - numberOfNodes /2] = 1;
                 }
 
                 ArrayList<Fragment> newFragments = new ArrayList<>();
@@ -137,8 +137,8 @@ public class Graph {
      * @param edges The list to must be sorted.
      */
     private void bubbleReverseSort(List<Edge> edges) {
-        for (int i = 0; i < this.n  -1; i++) {
-            for (int j = 0; j < this.n - i - 1; j++) {
+        for (int i = 0; i < this.numberOfNodes -1; i++) {
+            for (int j = 0; j < this.numberOfNodes - i - 1; j++) {
                 if (edges.get(j).getWeight() < edges.get(j + 1).getWeight()) {
                     Edge temp = edges.get(j);
                     edges.set(j, edges.get(j + 1));
