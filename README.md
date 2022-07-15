@@ -1,10 +1,3 @@
-# Bioinformatics-Project
-Master's prject for the bioinformatics lesson.
-
-- /!\ Add code in new folder called "Code"
-- /!\ Code on your branch and we'll merge on meetings
-- /!\ Let's try not to add useless files to the repo (like IntelliJ's files, etc)
-
 # TP 10/11/2021
 - Stocker en essayant d'utiliser le moins d'espace possible. Minimiser un maximum. 
 - Regarder a la memoire et comment elle est geree + optimalite.
