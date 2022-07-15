@@ -26,7 +26,7 @@ public class Graph {
     public List<Fragment> constructorNodes(Collection fragments){
         List<Fragment> nodesList = new ArrayList<>(numberOfNodes);
         nodesList.addAll(Arrays.asList(fragments.getCollection()));
-        for (Fragment fragment : Arrays.asList(fragments.getCollection())){
+        for (Fragment fragment : fragments.getCollection()){
             Fragment inverse = fragment.reversedComplementary();
             nodesList.add(inverse);
         }
@@ -39,19 +39,76 @@ public class Graph {
      * @param nodes A collection of fragments.
      * @return A list of Edges.
      */
-    public List<Edge> constructorEdges(List<Fragment> nodes){
+    public List<Edge> constructorEdges(List<Fragment> nodes) {
         List<Edge> edgesList = new ArrayList<>(numberOfEdges);
-        for (Fragment src : nodes){
-            int indiceSrc = nodes.indexOf(src);
-            for (Fragment dest : nodes){
-
-                if (nodes.indexOf(dest) != indiceSrc && nodes.indexOf(dest) != indiceSrc + (this.numberOfNodes /2) ){
-                    Edge edge = new Edge(src,dest);
+        for (Fragment source : nodes) {
+            int indexSource = nodes.indexOf(source);
+            for (Fragment destination : nodes) {
+                int indexDestination = nodes.indexOf(destination);
+                /*
+                indexDestination != indexSource + (this.numberOfNodes / 2) makes sure that we do not create an edge
+                and its inverse complementary.
+                */
+                if (indexDestination != indexSource && indexDestination != indexSource + (this.numberOfNodes / 2)) {
+                    Edge edge = new Edge(source,destination);
+                    int semiGlobalScore = semiGlobalAlignmentScore(source, destination);
+                    edge.setWeight(semiGlobalScore);
                     edgesList.add(edge);
                 }
             }
         }
         return edgesList;
+    }
+
+    public static int semiGlobalAlignmentScore(Fragment firstFragment, Fragment secondFragment) {
+        /*
+        the first fragment is represented vertically in the matrix
+        the second fragment is represented horizontally in the matrix
+        */
+        int firstFragmentLength = firstFragment.getLength();
+        int secondFragmentLength = secondFragment.getLength();
+
+        int matrixVerticalLength = firstFragmentLength + 1;
+        int matrixHorizontalLength = secondFragmentLength + 1;
+        int[][] matrix = new int[matrixVerticalLength][matrixHorizontalLength];
+
+        for (int i = 1; i < matrixVerticalLength; i++) {
+            for (int j = 1; j < matrixHorizontalLength; j++) {
+                String firstFragmentString = firstFragment.getFragment();
+                String secondFragmentString = secondFragment.getFragment();
+                int element1 = matrix[i - 1][j] - 2;
+                char firstChar = firstFragmentString.charAt(i-1);
+                char secondChar = secondFragmentString.charAt(j-1);
+                boolean charsAreEquals = firstChar == secondChar;
+                int element2 = charsAreEquals ? matrix[i - 1][j - 1] + 1 : matrix[i - 1][j - 1] - 1;
+                int element3 = matrix[i][j - 1] - 2;
+                matrix[i][j] = Math.max(Math.max(element1, element2), element3);
+            }
+        }
+
+        int[] lastLine = matrix[matrixVerticalLength-1];
+        int lastLineMaximum = Integer.MIN_VALUE;
+        // int lastLineMaximumIndex = -1;
+        for (int i = 0; i < lastLine.length - 1; i++) {
+            int currentElement = lastLine[i];
+            if (currentElement >= lastLineMaximum) {
+                lastLineMaximum = currentElement;
+                // lastLineMaximumIndex = i;
+            }
+        }
+
+        int lastIndex = matrixHorizontalLength - 1;
+        int lastColumnMaximum = Integer.MIN_VALUE;
+        // int lastColumnMaximumIndex = -1;
+        for (int i = 0; i < matrixVerticalLength; i++) {
+            int currentElement = matrix[i][lastIndex];
+            if (currentElement >= lastColumnMaximum) {
+                lastColumnMaximum = currentElement;
+                // lastColumnMaximumIndex = i;
+            }
+        }
+
+        return Integer.max(lastLineMaximum, lastColumnMaximum);
     }
 
     /**
@@ -63,22 +120,22 @@ public class Graph {
      * @return A two dimension tab representing the overlap graph.
      */
     public static int[][] getOverlapGraph(Fragment f, Fragment g) {
-        int matriceSizeLong = f.getLength();
-        int matriceSizeLarg = g.getLength();
+        int matrixSizeLong = f.getLength();
+        int matrixSizeLarg = g.getLength();
 
-        int[][] overlapGraph = new int[matriceSizeLong + 1][matriceSizeLarg + 1];
+        int[][] overlapGraph = new int[matrixSizeLong + 1][matrixSizeLarg + 1];
 
 
-        for(int i = 0; i < matriceSizeLong; i++){
+        for(int i = 0; i < matrixSizeLong; i++){
             overlapGraph[i][0] = 0;
         }
 
-        for(int i = 0; i < matriceSizeLarg; i++){
+        for(int i = 0; i < matrixSizeLarg; i++){
             overlapGraph[0][i] = 0;
         }
 
-        for (int i = 1; i < matriceSizeLong; i++) {
-            for (int j = 1; j < matriceSizeLarg; j++) {
+        for (int i = 1; i < matrixSizeLong; i++) {
+            for (int j = 1; j < matrixSizeLarg; j++) {
                 int penality;
                 if (f.getFragment().charAt(i) == g.getFragment().charAt(j)){
                     penality = 1;

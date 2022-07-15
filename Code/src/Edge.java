@@ -12,7 +12,7 @@ public class Edge {
     public Edge(Fragment src, Fragment dest){
         this.src = src;
         this.dest = dest;
-        this.weight = weight();
+        // this.weight = weight();
     }
 
     public Edge(Fragment src, Fragment dest, ArrayList<Fragment> chemin) {
@@ -58,5 +58,9 @@ public class Edge {
 
     public ArrayList<Fragment> getChemin() {
         return chemin;
+    }
+
+    public void setWeight(int weight) {
+        this.weight = weight;
     }
 }
