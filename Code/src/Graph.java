@@ -114,39 +114,22 @@ public class Graph {
     /**
      * This method is used to get the overlap Graph.
      *
-     * @param f A first fragment
-     * @param g A second fragment
-     *
      * @return A two dimension tab representing the overlap graph.
      */
-    public static int[][] getOverlapGraph(Fragment f, Fragment g) {
-        int matrixSizeLong = f.getLength();
-        int matrixSizeLarg = g.getLength();
-
-        int[][] overlapGraph = new int[matrixSizeLong + 1][matrixSizeLarg + 1];
-
-
-        for(int i = 0; i < matrixSizeLong; i++){
-            overlapGraph[i][0] = 0;
-        }
-
-        for(int i = 0; i < matrixSizeLarg; i++){
-            overlapGraph[0][i] = 0;
-        }
-
-        for (int i = 1; i < matrixSizeLong; i++) {
-            for (int j = 1; j < matrixSizeLarg; j++) {
-                int penality;
-                if (f.getFragment().charAt(i) == g.getFragment().charAt(j)){
-                    penality = 1;
+    public int[][] getOverlapGraph() {
+        int[][] graph = new int[numberOfNodes][numberOfNodes];
+        for (int i = 0; i < numberOfNodes; i++) {
+            for (int j = 0; j < numberOfNodes; j++) {
+                if (i == j || i == j + (numberOfNodes / 2) || j == i + (numberOfNodes / 2)) {
+                    graph[i][j] = -1;
                 }
-                else {penality = -1;}
-
-                overlapGraph[i][j] = Math.max(Math.max(overlapGraph[i-1][j] -2, overlapGraph[i][j-1] -2), overlapGraph[i-1][j-1] + penality);
+                else {
+                    int score = semiGlobalAlignmentScore(nodes.get(i), nodes.get(j));
+                    graph[i][j] = score;
+                }
             }
         }
-
-        return overlapGraph;
+        return graph;
     }
 
     /**

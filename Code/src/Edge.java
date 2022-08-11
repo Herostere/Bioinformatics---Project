@@ -26,23 +26,23 @@ public class Edge {
      *
      * @return An int representing the weight of the edge.
      */
-    public int weight() {
-        int[][] overlapGraph = Graph.getOverlapGraph(this.src, this.dest);
-        int i = this.src.getLength();
-        int j = this.dest.getLength();
-
-        int maximum = 0;
-
-        for (int x = 0; x < j; x++) {
-            maximum = Math.max(maximum, overlapGraph[i][x]);
-        }
-
-        for (int x = 0; x < i; x++) {
-            maximum = Math.max(maximum, overlapGraph[x][j]);
-        }
-
-        return maximum;
-    }
+//    public int weight() {
+//        int[][] overlapGraph = Graph.getOverlapGraph(this.src, this.dest);
+//        int i = this.src.getLength();
+//        int j = this.dest.getLength();
+//
+//        int maximum = 0;
+//
+//        for (int x = 0; x < j; x++) {
+//            maximum = Math.max(maximum, overlapGraph[i][x]);
+//        }
+//
+//        for (int x = 0; x < i; x++) {
+//            maximum = Math.max(maximum, overlapGraph[x][j]);
+//        }
+//
+//        return maximum;
+//    }
 
     public Fragment getSrc() {
         return this.src;
