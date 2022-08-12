@@ -4,22 +4,22 @@ import java.util.ArrayList;
  * This class describes an Edge.
  */
 public class Edge {
-    private Fragment src;
-    private Fragment dest;
-    private int weight;
+    private final Fragment src;
+    private final Fragment dest;
+    private final int weight;
     private ArrayList<Fragment> chemin;
 
-    public Edge(Fragment src, Fragment dest){
+    public Edge(Fragment src, Fragment dest, int weight){
         this.src = src;
         this.dest = dest;
-        // this.weight = weight();
+        this.weight = weight;
     }
 
-    public Edge(Fragment src, Fragment dest, ArrayList<Fragment> chemin) {
-        this.src = src;
-        this.dest = dest;
-        this.chemin = chemin;
-    }
+//    public Edge(Fragment src, Fragment dest, ArrayList<Fragment> chemin) {
+//        this.src = src;
+//        this.dest = dest;
+//        this.chemin = chemin;
+//    }
 
     /**
      * This method is used to compute the weight of an edge.
@@ -60,7 +60,7 @@ public class Edge {
         return chemin;
     }
 
-    public void setWeight(int weight) {
-        this.weight = weight;
-    }
+//    public void setWeight(int weight) {
+//        this.weight = weight;
+//    }
 }

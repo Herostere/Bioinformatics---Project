@@ -10,10 +10,10 @@ public class Graph {
     private final int numberOfNodes;
 
     public Graph (Collection fragments){
-        numberOfNodes = fragments.getCollection().length * 2;
-        numberOfEdges = numberOfNodes * (numberOfNodes - 2);
-
         nodes = constructorNodes(fragments);
+
+        numberOfNodes = nodes.size();
+        numberOfEdges = numberOfNodes * (numberOfNodes - 2);
 //        edges = constructorEdges(nodes);
     }
 
@@ -24,40 +24,18 @@ public class Graph {
      * @return A list of Fragments.
      */
     public List<Fragment> constructorNodes(Collection fragments){
-        List<Fragment> nodesList = new ArrayList<>(numberOfNodes);
-        nodesList.addAll(Arrays.asList(fragments.getCollection()));
-        for (Fragment fragment : fragments.getCollection()){
-            Fragment inverse = fragment.reversedComplementary();
+        List<Fragment> nodesList = new ArrayList<>(fragments.getCollection().length);
+        for (Fragment fragment : fragments.getCollection()) {
+            if (!nodesList.contains(fragment) && !nodesList.contains(fragment.reversedComplementary())) {
+                nodesList.add(fragment);
+            }
+        }
+        int numberOfNodesTemp = nodesList.size();
+        for (int i = 0; i < numberOfNodesTemp; i++){
+            Fragment inverse = nodesList.get(i).reversedComplementary();
             nodesList.add(inverse);
         }
         return nodesList;
-    }
-
-    /**
-     * This method is used to construct the edges of a graph.
-     *
-     * @param nodes A collection of fragments.
-     * @return A list of Edges.
-     */
-    public List<Edge> constructorEdges(List<Fragment> nodes) {
-        List<Edge> edgesList = new ArrayList<>(numberOfEdges);
-        for (Fragment source : nodes) {
-            int indexSource = nodes.indexOf(source);
-            for (Fragment destination : nodes) {
-                int indexDestination = nodes.indexOf(destination);
-                /*
-                indexDestination != indexSource + (this.numberOfNodes / 2) makes sure that we do not create an edge
-                and its inverse complementary.
-                */
-                if (indexDestination != indexSource && indexDestination != indexSource + (this.numberOfNodes / 2)) {
-                    Edge edge = new Edge(source,destination);
-                    int semiGlobalScore = semiGlobalAlignmentScore(source, destination);
-                    edge.setWeight(semiGlobalScore);
-                    edgesList.add(edge);
-                }
-            }
-        }
-        return edgesList;
     }
 
     public static int semiGlobalAlignmentScore(Fragment firstFragment, Fragment secondFragment) {
@@ -118,7 +96,11 @@ public class Graph {
      */
     private int[][] getOverlapGraph() {
         int[][] graph = new int[numberOfNodes][numberOfNodes];
+        System.out.println("Constructing Overlap Graph:");
         for (int i = 0; i < numberOfNodes; i++) {
+            int percentage = (int) (((float) i / numberOfNodes) * 100);
+            System.out.print("\r");
+            System.out.print("[" + "*".repeat(percentage) + "-".repeat(100 - percentage) + "]");
             for (int j = 0; j < numberOfNodes; j++) {
                 if (i == j || i == j + (numberOfNodes / 2) || j == i + (numberOfNodes / 2)) {
                     graph[i][j] = -1;
@@ -129,6 +111,7 @@ public class Graph {
                 }
             }
         }
+        System.out.println();
         return graph;
     }
 
@@ -140,31 +123,76 @@ public class Graph {
     public void greedy(){
         int[] in = new int[numberOfNodes];
         int[] out = new int[numberOfNodes];
-        List<List<Fragment>> listOfsets = new ArrayList<>();
-        int[][] overlapGraph = getOverlapGraph();
+        List<List<Fragment>> listOfSets = new ArrayList<>();
+//        int[][] overlapGraph = getOverlapGraph();
+//        System.out.println(Arrays.deepToString(overlapGraph));
 
         for (int i = 0; i < numberOfNodes; i++) {
             List<Fragment> initialList = new ArrayList<>();
             initialList.add(nodes.get(i));
-            listOfsets.add(initialList);
+            listOfSets.add(initialList);
+        }
+
+        List<Edge> edges = sortEdges();
+        for (Edge edge : edges) {
+            Fragment f = edge.getSrc();
+            Fragment g = edge.getDest();
+            int indexF = nodes.indexOf(f);
+            int indexG = nodes.indexOf(g);
+
+            List<Fragment> foundF = findSet(listOfSets, f);
+            List<Fragment> foundG = findSet(listOfSets, g);
+            if (in[indexG] == 0 && out[indexF] == 0 && (foundF.size() != foundG.size() || !foundF.equals(foundG))) {
+                in[indexG] = 1;
+                out[indexF] = 1;
+                union(listOfSets, foundF, foundG);
+            }
+            if (listOfSets.size() == 1) {
+                break;
+            }
         }
     }
 
-    /**
-     * This method is used to sort (from max to low) the edges on a List using the Bubble sort algorithm.
-     *
-     * @param edges The list to must be sorted.
-     */
-    private void bubbleReverseSort(List<Edge> edges) {
-        for (int i = 0; i < this.numberOfNodes -1; i++) {
-            for (int j = 0; j < this.numberOfNodes - i - 1; j++) {
-                if (edges.get(j).getWeight() < edges.get(j + 1).getWeight()) {
-                    Edge temp = edges.get(j);
-                    edges.set(j, edges.get(j + 1));
-                    edges.set(j + 1, temp);
+    private List<Fragment> findSet(List<List<Fragment>> listOfSets, Fragment node) {
+        List<Fragment> set = new ArrayList<>(0);
+        for (List<Fragment> setTemp : listOfSets) {
+            if (setTemp.contains(node)) {
+                set = setTemp;
+            }
+        }
+        return set;
+    }
+
+    private void union(List<List<Fragment>> listOfSets, List<Fragment> list1, List<Fragment> list2) {
+        listOfSets.remove(list1);
+        listOfSets.remove(list2);
+        list1.addAll(list2);
+        listOfSets.add(list1);
+    }
+
+    private List<Edge> sortEdges() {
+        List<Edge> edges = new ArrayList<>(numberOfNodes * (numberOfNodes - 2));
+        System.out.println("Constructing edges:");
+        for (int i = 0; i < numberOfNodes; i++) {
+            int percentage = (int) (((float) i / numberOfNodes) * 10);
+            System.out.print("\r");
+            System.out.print("[" + "*".repeat(percentage) + "-".repeat(10 - percentage) + "]");
+            Fragment node1 = nodes.get(i);
+            for (int j = 0; j < numberOfNodes; j++) {
+                Fragment node2 = nodes.get(j);
+                if (i != j && i != j + (numberOfNodes / 2) && j != i + (numberOfNodes / 2)){
+                    int score = semiGlobalAlignmentScore(node1, node2);
+                    edges.add(new Edge(node1, node2, score));
                 }
             }
         }
+        System.out.print("\r");
+        System.out.print("[" + "*".repeat(10) + "]");
+        System.out.println();
+
+        edges.sort(new CompareEdges());
+
+        return edges;
     }
 
     /**
@@ -174,38 +202,38 @@ public class Graph {
      * @param arc The edge on which perform the union.
      * @return The list representing the united path and edge.
      */
-    public List<Edge> union(List<Edge> chem, Edge arc){
-        List<Edge> chemin = chem;
-        int flag = 0;
-        if(chemin.isEmpty()){
-            chemin.add(arc);
-            return chemin;
-        }
-        for (int i = 0; i < chem.size(); i++) {
-            Edge edges = chem.get(i);
-            if (edges.getDest() == arc.getSrc()){
-                edges.getChemin().remove(edges.getChemin().size()-1);
-                ArrayList<Fragment> newArrayList = new ArrayList<>(edges.getChemin());
-                newArrayList.addAll(arc.getChemin());
-                Edge temp = new Edge(edges.getSrc(), arc.getDest(), newArrayList);
-                chemin.add(temp);
-                flag += 1;
-            }
-            else if (edges.getSrc() == arc.getDest()){
-                arc.getChemin().remove(arc.getChemin().size()-1);
-                ArrayList<Fragment> newArrayList = new ArrayList<>(arc.getChemin());
-                newArrayList.addAll(edges.getChemin());
-
-                Edge temp = new Edge(arc.getSrc(), edges.getDest(), newArrayList);
-                chemin.add(temp);
-                flag += 1;
-            }
-
-        }
-        if(flag == 0){
-            chemin.add(arc);
-        }
-        return chemin;
-    }
+//    public List<Edge> union(List<Edge> chem, Edge arc){
+//        List<Edge> chemin = chem;
+//        int flag = 0;
+//        if(chemin.isEmpty()){
+//            chemin.add(arc);
+//            return chemin;
+//        }
+//        for (int i = 0; i < chem.size(); i++) {
+//            Edge edges = chem.get(i);
+//            if (edges.getDest() == arc.getSrc()){
+//                edges.getChemin().remove(edges.getChemin().size()-1);
+//                ArrayList<Fragment> newArrayList = new ArrayList<>(edges.getChemin());
+//                newArrayList.addAll(arc.getChemin());
+//                Edge temp = new Edge(edges.getSrc(), arc.getDest(), newArrayList);
+//                chemin.add(temp);
+//                flag += 1;
+//            }
+//            else if (edges.getSrc() == arc.getDest()){
+//                arc.getChemin().remove(arc.getChemin().size()-1);
+//                ArrayList<Fragment> newArrayList = new ArrayList<>(arc.getChemin());
+//                newArrayList.addAll(edges.getChemin());
+//
+//                Edge temp = new Edge(arc.getSrc(), edges.getDest(), newArrayList);
+//                chemin.add(temp);
+//                flag += 1;
+//            }
+//
+//        }
+//        if(flag == 0){
+//            chemin.add(arc);
+//        }
+//        return chemin;
+//    }
 
 }

@@ -41,10 +41,10 @@ public class Fragment {
 
         for (String str : fragmentArray) {
             switch (str) {
-                case "A" -> complementary.append("T");
-                case "T" -> complementary.append("A");
-                case "C" -> complementary.append("G");
-                case "G" -> complementary.append("C");
+                case "a" -> complementary.append("t");
+                case "t" -> complementary.append("a");
+                case "c" -> complementary.append("g");
+                case "g" -> complementary.append("c");
                 default -> complementary.append("-");
             }
         }
