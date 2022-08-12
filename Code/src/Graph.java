@@ -14,7 +14,7 @@ public class Graph {
         numberOfEdges = numberOfNodes * (numberOfNodes - 2);
 
         nodes = constructorNodes(fragments);
-        edges = constructorEdges(nodes);
+//        edges = constructorEdges(nodes);
     }
 
     /**
@@ -116,7 +116,7 @@ public class Graph {
      *
      * @return A two dimension tab representing the overlap graph.
      */
-    public int[][] getOverlapGraph() {
+    private int[][] getOverlapGraph() {
         int[][] graph = new int[numberOfNodes][numberOfNodes];
         for (int i = 0; i < numberOfNodes; i++) {
             for (int j = 0; j < numberOfNodes; j++) {
@@ -137,38 +137,17 @@ public class Graph {
      *
      * @return The list of edges that are in the path.
      */
-    public List<Edge> greedy(){
-        byte[] in = new byte[numberOfNodes];
-        byte[] out = new byte[numberOfNodes];
-        List<Edge> chemin = new ArrayList<>();
-        bubbleReverseSort(edges); //TODO changer tri
+    public void greedy(){
+        int[] in = new int[numberOfNodes];
+        int[] out = new int[numberOfNodes];
+        List<List<Fragment>> listOfsets = new ArrayList<>();
+        int[][] overlapGraph = getOverlapGraph();
 
-        for (Edge arc : edges){
-            if(in[nodes.indexOf(arc.getDest())] == 0 && out[nodes.indexOf(arc.getSrc())] == 0){
-                in[nodes.indexOf(arc.getDest())] = 1;
-                out[nodes.indexOf(arc.getSrc())] = 1;
-                if (nodes.indexOf(arc.getDest()) < numberOfNodes /2){
-                    in[nodes.indexOf(arc.getDest()) + numberOfNodes /2] = 1;
-                }
-                else{
-                    in[nodes.indexOf(arc.getDest()) - numberOfNodes /2] = 1;
-                }
-                if (nodes.indexOf(arc.getSrc()) < numberOfNodes /2){
-                    out[nodes.indexOf(arc.getSrc()) + numberOfNodes /2] = 1;
-                }
-                else{
-                    out[nodes.indexOf(arc.getSrc()) - numberOfNodes /2] = 1;
-                }
-
-                ArrayList<Fragment> newFragments = new ArrayList<>();
-                newFragments.add(arc.getSrc());
-                newFragments.add(arc.getDest());
-                Edge edges = new Edge(arc.getSrc(),arc.getDest(), newFragments);
-
-                chemin = union(chemin, edges);
-            }
+        for (int i = 0; i < numberOfNodes; i++) {
+            List<Fragment> initialList = new ArrayList<>();
+            initialList.add(nodes.get(i));
+            listOfsets.add(initialList);
         }
-        return chemin;
     }
 
     /**

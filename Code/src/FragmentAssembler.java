@@ -323,17 +323,18 @@ public class FragmentAssembler {
             Collection collection1 = new Collection(extractFragments(pathInput));
             // 2. Construction of the graph
             Graph graph = new Graph(collection1);
+            graph.greedy();
             // 3. Perform "semi-global" alignment (computation of Hamiltonian path?)
-            List<Edge> path = graph.greedy();
+//            List<Edge> path = graph.greedy();
             // 3. Gaps
-            gaps(path);
+//            gaps(path);
             // 4. Consensus
-            String chaine = consensus(path);
+//            String chaine = consensus(path);
             // 5. Print the string
-            System.out.println(chaine);
-            String chaineIC = reversedComplementaryString(chaine);
-            writeFile(chaine, pathOutput);
-            writeFile(chaineIC, pathOutputIC);
+//            System.out.println(chaine);
+//            String chaineIC = reversedComplementaryString(chaine);
+//            writeFile(chaine, pathOutput);
+//            writeFile(chaineIC, pathOutputIC);
         }
     }
 }
