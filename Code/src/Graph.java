@@ -151,7 +151,6 @@ public class Graph {
                 break;
             }
         }
-        System.out.println(listOfSets.get(0).size());
         return listOfSets.get(0);
     }
 
