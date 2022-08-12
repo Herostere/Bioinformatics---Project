@@ -118,9 +118,9 @@ public class Graph {
     /**
      * This method is used to perform the greedy algorithm.
      *
-     * @return The list of edges that are in the path.
+     * @return The ordered list of fragments that are in the path.
      */
-    public void greedy(){
+    public List<Fragment> greedy(){
         int[] in = new int[numberOfNodes];
         int[] out = new int[numberOfNodes];
         List<List<Fragment>> listOfSets = new ArrayList<>();
@@ -151,6 +151,8 @@ public class Graph {
                 break;
             }
         }
+        System.out.println(listOfSets.get(0).size());
+        return listOfSets.get(0);
     }
 
     private List<Fragment> findSet(List<List<Fragment>> listOfSets, Fragment node) {
