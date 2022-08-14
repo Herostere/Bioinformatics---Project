@@ -325,10 +325,11 @@ public class FragmentAssembler {
             Graph graph = new Graph(collection1);
             List<Fragment> orderedEdges = graph.greedy();
             List<Alignment> alignments = Graph.alignments(orderedEdges);
-            for (Alignment alignment : alignments) {
+            List<Alignment> alignmentsShifted = Graph.shifts(alignments);
+            for (Alignment alignment : alignmentsShifted) {
                 System.out.println(alignment.getSource());
                 System.out.println(alignment.getDestination());
-                System.out.println("*".repeat(100));
+                System.out.println(alignment.getShifts());
             }
             // 3. Perform "semi-global" alignment (computation of Hamiltonian path?)
 //            List<Edge> path = graph.greedy();

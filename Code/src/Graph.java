@@ -240,6 +240,34 @@ public class Graph {
         return new Alignment(construction1, construction2);
     }
 
+    public static List<Alignment> shifts(List<Alignment> alignments) {
+        List<Alignment> shiftedAlignments = new ArrayList<>();
+        String currentDestination = alignments.get(0).getDestination();
+        String currentSource;
+        shiftedAlignments.add(new Alignment(new StringBuilder(alignments.get(0).getSource()), new StringBuilder(alignments.get(0).getDestination())));
+        int totalShifts = countShifts(currentDestination);
+        for (int i = 1; i < alignments.size(); i++) {
+            currentDestination = alignments.get(i).getDestination();
+            currentSource = alignments.get(i).getSource();
+            shiftedAlignments.add(new Alignment(new StringBuilder(currentSource), new StringBuilder(currentDestination), totalShifts));
+            totalShifts += countShifts(currentDestination);
+        }
+        return shiftedAlignments;
+    }
+
+    private static int countShifts(String fragment) {
+        int shifts = 0;
+        for (int i = 0; i < fragment.length(); i++) {
+            char currentChar = fragment.charAt(i);
+
+            if ('.' != currentChar) {
+                break;
+            }
+            shifts += 1;
+        }
+        return shifts;
+    }
+
     private List<Edge> sortEdges() {
         List<Edge> edges = new ArrayList<>(numberOfNodes * (numberOfNodes - 2));
         int numberOfThreads = 50;
