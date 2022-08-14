@@ -142,6 +142,11 @@ public class Graph {
 
             List<Fragment> foundF = findSet(listOfSets, f);
             List<Fragment> foundG = findSet(listOfSets, g);
+            boolean fInG = g.getFragment().contains(f.getFragment());
+            boolean gInF = f.getFragment().contains(g.getFragment());
+            if (fInG || gInF) {
+                continue;
+            }
             if (in[indexG] == 0 && out[indexF] == 0 && (foundF.size() != foundG.size() || !foundF.equals(foundG))) {
                 in[indexG] = 1;
                 out[indexF] = 1;

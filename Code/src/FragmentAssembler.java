@@ -323,7 +323,7 @@ public class FragmentAssembler {
             Collection collection1 = new Collection(extractFragments(pathInput));
             // 2. Construction of the graph
             Graph graph = new Graph(collection1);
-            graph.greedy();
+            List<Fragment> orderedEdges = graph.greedy();
             // 3. Perform "semi-global" alignment (computation of Hamiltonian path?)
 //            List<Edge> path = graph.greedy();
             // 3. Gaps
