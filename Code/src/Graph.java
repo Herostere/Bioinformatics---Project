@@ -227,46 +227,4 @@ public class Graph {
 
         return edges;
     }
-
-    /**
-     * This method is used to do the union between a path and an edge.
-     *
-     * @param chem The path on which perform the union.
-     * @param arc The edge on which perform the union.
-     * @return The list representing the united path and edge.
-     */
-//    public List<Edge> union(List<Edge> chem, Edge arc){
-//        List<Edge> chemin = chem;
-//        int flag = 0;
-//        if(chemin.isEmpty()){
-//            chemin.add(arc);
-//            return chemin;
-//        }
-//        for (int i = 0; i < chem.size(); i++) {
-//            Edge edges = chem.get(i);
-//            if (edges.getDest() == arc.getSrc()){
-//                edges.getChemin().remove(edges.getChemin().size()-1);
-//                ArrayList<Fragment> newArrayList = new ArrayList<>(edges.getChemin());
-//                newArrayList.addAll(arc.getChemin());
-//                Edge temp = new Edge(edges.getSrc(), arc.getDest(), newArrayList);
-//                chemin.add(temp);
-//                flag += 1;
-//            }
-//            else if (edges.getSrc() == arc.getDest()){
-//                arc.getChemin().remove(arc.getChemin().size()-1);
-//                ArrayList<Fragment> newArrayList = new ArrayList<>(arc.getChemin());
-//                newArrayList.addAll(edges.getChemin());
-//
-//                Edge temp = new Edge(arc.getSrc(), edges.getDest(), newArrayList);
-//                chemin.add(temp);
-//                flag += 1;
-//            }
-//
-//        }
-//        if(flag == 0){
-//            chemin.add(arc);
-//        }
-//        return chemin;
-//    }
-
 }
