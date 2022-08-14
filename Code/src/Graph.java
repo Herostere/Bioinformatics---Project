@@ -9,14 +9,12 @@ import java.util.stream.IntStream;
 public class Graph {
     private List<Fragment> nodes;
     private List<Edge> edges;
-    private final int numberOfEdges;
     private final int numberOfNodes;
 
     public Graph (Collection fragments){
         nodes = constructorNodes(fragments);
 
         numberOfNodes = nodes.size();
-        numberOfEdges = numberOfNodes * (numberOfNodes - 2);
     }
 
     /**
