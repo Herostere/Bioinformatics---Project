@@ -17,7 +17,6 @@ public class Graph {
 
         numberOfNodes = nodes.size();
         numberOfEdges = numberOfNodes * (numberOfNodes - 2);
-//        edges = constructorEdges(nodes);
     }
 
     /**
@@ -91,7 +90,7 @@ public class Graph {
 
         return Integer.max(lastLineMaximum, lastColumnMaximum);
     }
-    
+
     /**
      * This method is used to perform the greedy algorithm.
      *
