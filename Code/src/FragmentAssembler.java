@@ -245,8 +245,8 @@ public class FragmentAssembler {
             System.out.println(finalString);
             String stringIC = reversedComplementaryString(finalString);
             System.out.println(stringIC);
-//            writeFile(chaine, pathOutput);
-//            writeFile(chaineIC, pathOutputIC);
+            writeFile(finalString, pathOutput);
+            writeFile(stringIC, pathOutputIC);
         }
     }
 }
