@@ -7,12 +7,11 @@ import java.util.stream.IntStream;
  * This class is used to describe a graph.
  */
 public class Graph {
-    private List<Fragment> nodes;
+    private final List<Fragment> nodes;
     private final int numberOfNodes;
 
     public Graph (Collection fragments){
         nodes = constructorNodes(fragments);
-
         numberOfNodes = nodes.size();
     }
 
