@@ -224,9 +224,6 @@ public class Graph {
         }
 
         edges.sort(new CompareEdges());
-        for (Edge edge : edges) {
-            System.out.println(edge.getWeight());
-        }
 
         return edges;
     }
