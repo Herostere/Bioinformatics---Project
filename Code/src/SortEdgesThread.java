@@ -27,6 +27,7 @@ public class SortEdgesThread extends Thread {
                     edges.add(new Edge(node1, node2, score));
                 }
             }
+
         }
     }
 }

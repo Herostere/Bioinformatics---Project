@@ -216,24 +216,26 @@ public class Graph {
         while (i > 0) {
             charFrag1 = fragment1.getFragment().charAt(i-1);
             construction1.insert(0, charFrag1);
-            construction2.insert(0, "-");
+            construction2.insert(0, ".");
             i -= 1;
         }
         while (j > 0) {
             charFrag2 = fragment2.getFragment().charAt(j-1);
             construction2.insert(0, charFrag2);
-            construction1.insert(0, "-");
+            construction1.insert(0, ".");
             j -= 1;
         }
-        for (int x = semiGlobal.index(); x < fragment1.getLength(); x++) {
-            charFrag1 = fragment1.getFragment().charAt(Math.max(0, x-1));
-            construction1.insert(Math.max(0, construction1.length() - 1), charFrag1);
-            construction2.insert(Math.max(0, construction1.length() - 1), "-");
+        if (semiGlobal.position().equals("column")) {
+            for (int x = semiGlobal.index(); x < fragment1.getLength(); x++) {
+                charFrag1 = fragment1.getFragment().charAt(Math.max(0, x - 1));
+                construction1.insert(Math.max(0, construction1.length() - 1), charFrag1);
+            }
         }
-        for (int x = semiGlobal.index(); x < fragment2.getLength(); x++) {
-            charFrag2 = fragment2.getFragment().charAt(Math.max(0, x-1));
-            construction2.insert(Math.max(0, construction2.length() - 1), charFrag2);
-            construction1.insert(Math.max(0, construction1.length() - 1), "-");
+        else {
+            for (int x = semiGlobal.index(); x < fragment2.getLength(); x++) {
+                charFrag2 = fragment2.getFragment().charAt(Math.max(0, x - 1));
+                construction2.insert(Math.max(0, construction2.length() - 1), charFrag2);
+            }
         }
         return new Alignment(construction1, construction2);
     }
