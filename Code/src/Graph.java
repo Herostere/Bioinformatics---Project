@@ -8,7 +8,6 @@ import java.util.stream.IntStream;
  */
 public class Graph {
     private List<Fragment> nodes;
-    private List<Edge> edges;
     private final int numberOfNodes;
 
     public Graph (Collection fragments){
