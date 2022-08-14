@@ -86,7 +86,7 @@ public class Graph {
 
         semiGlobalScoreMatrix scoreMatrix = new semiGlobalScoreMatrix(Integer.max(lastLineMaximum, lastColumnMaximum), matrix);
 
-        return semiGlobalScoreMatrix;
+        return scoreMatrix;
     }
 
     /**
