@@ -91,33 +91,7 @@ public class Graph {
 
         return Integer.max(lastLineMaximum, lastColumnMaximum);
     }
-
-    /**
-     * This method is used to get the overlap Graph.
-     *
-     * @return A two dimension tab representing the overlap graph.
-     */
-    private int[][] getOverlapGraph() {
-        int[][] graph = new int[numberOfNodes][numberOfNodes];
-        System.out.println("Constructing Overlap Graph:");
-        for (int i = 0; i < numberOfNodes; i++) {
-            int percentage = (int) (((float) i / numberOfNodes) * 100);
-            System.out.print("\r");
-            System.out.print("[" + "*".repeat(percentage) + "-".repeat(100 - percentage) + "]");
-            for (int j = 0; j < numberOfNodes; j++) {
-                if (i == j || i == j + (numberOfNodes / 2) || j == i + (numberOfNodes / 2)) {
-                    graph[i][j] = -1;
-                }
-                else {
-                    int score = semiGlobalAlignmentScore(nodes.get(i), nodes.get(j));
-                    graph[i][j] = score;
-                }
-            }
-        }
-        System.out.println();
-        return graph;
-    }
-
+    
     /**
      * This method is used to perform the greedy algorithm.
      *
