@@ -36,7 +36,7 @@ public class Graph {
         return nodesList;
     }
 
-    public static int semiGlobalAlignmentScore(Fragment firstFragment, Fragment secondFragment) {
+    public static semiGlobalScoreMatrix semiGlobalAlignmentScore(Fragment firstFragment, Fragment secondFragment) {
         /*
         the first fragment is represented vertically in the matrix
         the second fragment is represented horizontally in the matrix
@@ -84,7 +84,9 @@ public class Graph {
             }
         }
 
-        return Integer.max(lastLineMaximum, lastColumnMaximum);
+        semiGlobalScoreMatrix scoreMatrix = new semiGlobalScoreMatrix(Integer.max(lastLineMaximum, lastColumnMaximum), matrix);
+
+        return semiGlobalScoreMatrix;
     }
 
     /**

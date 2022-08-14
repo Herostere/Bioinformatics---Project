@@ -23,7 +23,7 @@ public class SortEdgesThread extends Thread {
             for (int j = 0; j < numberOfNodes; j++) {
                 Fragment node2 = nodes.get(j);
                 if (i != j && i != j + (numberOfNodes / 2) && j != i + (numberOfNodes / 2)){
-                    int score = Graph.semiGlobalAlignmentScore(node1, node2);
+                    int score = Graph.semiGlobalAlignmentScore(node1, node2).getScore();
                     edges.add(new Edge(node1, node2, score));
                 }
             }
