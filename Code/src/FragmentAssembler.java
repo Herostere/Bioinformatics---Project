@@ -170,20 +170,15 @@ public class FragmentAssembler {
             String[] stringSplits = new String[splits];
             int currentIndex = 0;
             for (int i = 0; i < splits; i++) {
-                int endIndex;
-                if ((currentIndex + 80) < chaine.length()) {
-                    endIndex = currentIndex + 80;
-                }
-                else {
-                    endIndex = chaine.length();
-                }
+                int endIndex = Math.min((currentIndex + 80), chaine.length());
                 stringSplits[i] = chaine.substring(currentIndex, endIndex);
                 currentIndex += 80;
             }
 
             myWriter.write("> Groupe-1 " + collectionNumber + " Longueur " + chaine.length());
+            myWriter.write("\n");
             for (String strings : stringSplits) {
-                myWriter.write(strings);
+                myWriter.write(strings + "\n");
             }
             myWriter.close();
         }
