@@ -1,4 +1,7 @@
+import javax.sound.midi.Soundbank;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * This class is used to describe a graph.
@@ -177,26 +180,53 @@ public class Graph {
     }
 
     private List<Edge> sortEdges() {
+//         List<Edge> edges = new ArrayList<>(numberOfNodes * (numberOfNodes - 2));
+//         System.out.println("Constructing edges:");
+//         for (int i = 0; i < numberOfNodes; i++) {
+//            int percentage = (int) (((float) i / numberOfNodes) * 10);
+//            System.out.print("\r");
+//            System.out.print("[" + "*".repeat(percentage) + "-".repeat(10 - percentage) + "]");
+//            Fragment node1 = nodes.get(i);
+//            for (int j = 0; j < numberOfNodes; j++) {
+//                Fragment node2 = nodes.get(j);
+//                if (i != j && i != j + (numberOfNodes / 2) && j != i + (numberOfNodes / 2)){
+//                    int score = semiGlobalAlignmentScore(node1, node2);
+//                    edges.add(new Edge(node1, node2, score));
+//                }
+//            }
+//        }
+//        System.out.print("\r");
+//        System.out.print("[" + "*".repeat(10) + "]");
+//        System.out.println();
         List<Edge> edges = new ArrayList<>(numberOfNodes * (numberOfNodes - 2));
-        System.out.println("Constructing edges:");
-        for (int i = 0; i < numberOfNodes; i++) {
-            int percentage = (int) (((float) i / numberOfNodes) * 10);
-            System.out.print("\r");
-            System.out.print("[" + "*".repeat(percentage) + "-".repeat(10 - percentage) + "]");
-            Fragment node1 = nodes.get(i);
-            for (int j = 0; j < numberOfNodes; j++) {
-                Fragment node2 = nodes.get(j);
-                if (i != j && i != j + (numberOfNodes / 2) && j != i + (numberOfNodes / 2)){
-                    int score = semiGlobalAlignmentScore(node1, node2);
-                    edges.add(new Edge(node1, node2, score));
-                }
+        int numberOfThreads = 20;
+        int partitionSize = numberOfNodes / numberOfThreads;
+        List<Integer> range = IntStream.rangeClosed(0, numberOfNodes - 1).boxed().toList();
+        List<List<Integer>> partitions = new ArrayList<>();
+        for (int i = 0; i < range.size(); i += partitionSize) {
+            partitions.add(range.subList(i, Math.min(i + partitionSize, range.size())));
+        }
+        List<SortEdgesThread> threads = new ArrayList<>(numberOfThreads);
+        int i = 0;
+        for (List<Integer> list : partitions) {
+            threads.add(new SortEdgesThread(nodes, "Thread " + i, list.get(0), list.get(list.size() - 1), edges));
+            i += 1;
+        }
+        for (SortEdgesThread thread : threads) {
+            thread.start();
+        }
+        for (SortEdgesThread thread : threads) {
+            try {
+                thread.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         }
-        System.out.print("\r");
-        System.out.print("[" + "*".repeat(10) + "]");
-        System.out.println();
 
         edges.sort(new CompareEdges());
+        for (Edge edge : edges) {
+            System.out.println(edge.getWeight());
+        }
 
         return edges;
     }
