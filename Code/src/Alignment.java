@@ -1,7 +1,7 @@
 public class Alignment {
-    private final String source;
-    private final String destination;
-    private final int shifts;
+    private String source;
+    private String destination;
+    private int shifts;
 
     public Alignment(StringBuilder source, StringBuilder destination) {
         this.source = String.valueOf(source);
@@ -25,5 +25,17 @@ public class Alignment {
 
     public int getShifts() {
         return shifts;
+    }
+
+    public void setShifts(int shifts) {
+        this.shifts = shifts;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
+    }
+
+    public void setDestination(String destination) {
+        this.destination = destination;
     }
 }

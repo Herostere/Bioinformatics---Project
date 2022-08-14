@@ -62,186 +62,99 @@ public class FragmentAssembler {
         return fragments;
     }
 
-    /**
-     * This method is used to compute the alignment score between two fragments.
-     *
-     * @param frag1 The first fragment to compare.
-     * @param frag2 The second fragment to compare.
-     * @return An int representing the score of the best alignment.
-     */
-    private static int computeScore(String frag1, String frag2) {
-        int score = 0;
-        for (int i=0; i < Math.min(frag1.length(), frag2.length()); i++) {
-            char a = frag1.charAt(i);
-            char b = frag2.charAt(i);
-            if (a == '-' || b == '-') {
-                continue;
+
+    private static String consensus(List<Alignment> shifted) {
+        int index = findSomething(shifted);
+        StringBuilder consensused = new StringBuilder();
+        char value;
+        while (findSomething(shifted) != -1) {
+            int aCounter = 0;
+            int cCounter = 0;
+            int gCounter = 0;
+            int tCounter = 0;
+            int gapCounter = 0;
+            for (int i = index; i < shifted.size(); i++) {
+                int shifts = shifted.get(i).getShifts();
+                if (shifts > 0) {
+                    shifted.get(i).setShifts(shifts - 1);
+                }
+                else if (shifted.get(i).getSource().length() > 0) {
+                    String source = shifted.get(i).getSource();
+                    value = source.charAt(0);
+                    switch (value) {
+                        case 'a' -> aCounter += 1;
+                        case 'c' -> cCounter += 1;
+                        case 'g' -> gCounter += 1;
+                        case 't' -> tCounter += 1;
+                        case '-' -> gapCounter += 1;
+                    }
+                    shifted.get(i).setSource(source.substring(1));
+                }
+                else if (shifted.get(i).getDestination().length() > 0) {
+                    String destination = shifted.get(i).getDestination();
+                    value = destination.charAt(0);
+                    switch (value) {
+                        case 'a' -> aCounter += 1;
+                        case 'c' -> cCounter += 1;
+                        case 'g' -> gCounter += 1;
+                        case 't' -> tCounter += 1;
+                        case '-' -> gapCounter += 1;
+                    }
+                    shifted.get(i).setDestination(destination.substring(1));
+                }
             }
-            else if (a != b) {
-                score--;
-            }
-            else {
-                score++;
-            }
+            String toAdd = computeToAdd(aCounter, cCounter, gCounter, tCounter, gapCounter);
+            consensused.append(toAdd);
         }
-        return score;
+        return consensused.toString();
     }
 
-    /**
-     * This method adds the gaps in the "next" fragment in the path, for all fragment.
-     *
-     * @param path The selected path.
-     */
-    public static void gaps(List<Edge> path) {
-        Edge firstElem = path.get(0);
-        ArrayList<Fragment> chemin = firstElem.getChemin();
-
-        for (int i=0; i < chemin.size()-1; i++) {
-            int score = 0;
-            int shift = 0;
-            Fragment firstFrag = chemin.get(i);
-            Fragment secondFrag = chemin.get(i+1);
-            String firstFragString = firstFrag.getFragment();
-            String secondFragString = secondFrag.getFragment();
-            for(int j=0; j < firstFragString.length()-1; j++){
-                int tempScore = computeScore(firstFragString, secondFragString);
-                if(tempScore > score){
-                    score = tempScore;
-                    shift = j;
-                }
-                secondFragString = "-" + secondFragString;
-            }
-            secondFrag.setShift(shift);
+    private static String computeToAdd(int aCounter, int cCounter, int gCounter, int tCounter, int gapCounter) {
+        boolean aC = aCounter >= cCounter;
+        boolean aG = aCounter >= gCounter;
+        boolean aT = aCounter >= tCounter;
+        boolean aGap = aCounter >= gapCounter;
+        boolean cA = cCounter >= aCounter;
+        boolean cG = cCounter >= gCounter;
+        boolean cT = cCounter >= tCounter;
+        boolean cGap = cCounter >= gapCounter;
+        boolean gA = gCounter >= aCounter;
+        boolean gC = gCounter >= cCounter;
+        boolean gT = gCounter >= tCounter;
+        boolean gGap = gCounter >= gapCounter;
+        boolean tA = tCounter >= aCounter;
+        boolean tC = tCounter >= cCounter;
+        boolean tG = tCounter >= gCounter;
+        boolean tGap = tCounter >= gapCounter;
+        if (aC && aG && aT && aGap) {
+            return "a";
         }
+        else if (cA && cG && cT && cGap) {
+            return "c";
+        }
+        else if (gA && gC && gT && gGap) {
+            return "g";
+        }
+        else if (tA && tC && tG && tGap) {
+            return "t";
+        }
+        else  {
+            return "-";
+        }
+
     }
 
-    /**
-     * This method is used to compute the consensus on a path.
-     *
-     * @param path The path on which we want to check the consensus.
-     * @return The resulting string of the consensus.
-     */
-    private static String consensus(List<Edge> path) {
-        Edge firstElem = path.get(0);
-        ArrayList<Fragment> chemin = firstElem.getChemin();
-        ArrayList<String> consensusedStrings = new ArrayList<>();
-
-        int startAt;
-        int previousLength = 0;
-
-        // iterate on all fragments of the path.
-        for (int i=0; i < chemin.size(); i++) {
-            Fragment frag = chemin.get(i);
-            if (i != 0) {
-                previousLength = chemin.get(i-1).getLength();
+    private static int findSomething(List<Alignment> shifted) {
+        for (int i = 0; i < shifted.size(); i++) {
+            int shifts = shifted.get(i).getShifts();
+            if (shifts > 0) {
+                shifted.get(i).setShifts(shifts - 1);
             }
-            else {
-                previousLength = chemin.get(0).getLength();
-
+            else if (shifted.get(i).getSource().length() > 0 || shifted.get(i).getDestination().length() > 0) {
+                return  i;
             }
-            int fragLength = frag.getLength();
-            ArrayList<Fragment> superpos = new ArrayList<>();
-
-            // find fragments that overlap.
-            for (int j=i+1; j < chemin.size(); j++){
-                if (fragLength - chemin.get(j).getShift() > 0) {
-                    fragLength -= chemin.get(j).getShift();
-                    superpos.add(chemin.get(j));
-                }
-            }
-
-            String consensused = "";
-            ArrayList<String> superposStrings = new ArrayList<>();
-            superposStrings.add(frag.getFragment());
-            int zeroToAdd = 0;
-            for (Fragment frag2 : superpos) {
-                char[] gaps = new char[frag2.getShift()];
-                Arrays.fill(gaps, '-');
-                String newFrag;
-                zeroToAdd += frag2.getShift();
-                char[] zero = new char[zeroToAdd];
-                Arrays.fill(zero, '0');
-                String zeros = new String(zero);
-                newFrag = zeros + frag2.getFragment();
-                superposStrings.add(newFrag);
-            }
-
-            int remain = frag.getLength() + frag.getShift() - previousLength;
-            if (remain < 0) {
-                if (i+1 < chemin.size()) {
-                    Fragment fragB = chemin.get(i+1);
-                    fragB.setShift(fragB.getShift() + frag.getShift());
-                    chemin.remove(i);
-                    i--;
-                    continue;
-                }
-                break;
-            }
-
-            startAt = frag.getLength() - remain;
-            if (remain == 0) {
-                startAt = 0;
-            }
-            for (int j=startAt; j < frag.getFragment().length(); j++) {
-                int countA = 0;
-                int countC = 0;
-                int countT = 0;
-                int countG = 0;
-                int count_ = 0;
-
-                for(String fragA : superposStrings) {
-                    if (fragA.length() < j) {
-                        continue;
-                    }
-                    if (fragA.charAt(j) == 'a') {
-                        countA++;
-                    }
-                    else if (fragA.charAt(j) == 'c') {
-                        countC++;
-                    }
-                    else if (fragA.charAt(j) == 'g') {
-                        countG++;
-                    }
-                    else if (fragA.charAt(j) == 't') {
-                        countT++;
-                    }
-                    else if (fragA.charAt(j) == '-') {
-                        count_++;
-                    }
-                }
-
-                if (countA > countC && countA > countT && countA > countG && countA > count_) {
-                    consensused += "a";
-                }
-                else if (countC > countA && countC > countT && countC > countG && countC > count_) {
-                    consensused += "c";
-                }
-                else if (countT > countA && countT > countC && countT > countG && countT > count_) {
-                    consensused += "t";
-                }
-                else if (countG > countA && countG > countC && countG > countT && countG > count_) {
-                    consensused += "g";
-                }
-                else if (count_ > countA && count_ > countC && count_ > countT && count_ > countG) {
-                    consensused += "-";
-                }
-                else if (countA == countC || countA == countT || countA == countG || countA == count_) {
-                    consensused += "a";
-                }
-                else if (countC == countG || countC == countT || countC == count_) {
-                    consensused += "c";
-                }
-                else if (countT == countG || countT == count_) {
-                    consensused += "t";
-                }
-                else if (countG == count_){
-                    consensused += "g";
-                }
-            }
-            consensusedStrings.add(consensused);
         }
-        String chaine = consensusedStrings.stream().collect(Collectors.joining(""));
-        return chaine;
+        return -1;
     }
 
     public static void writeFile(String chaine, String pathOutput) {
@@ -326,20 +239,12 @@ public class FragmentAssembler {
             List<Fragment> orderedEdges = graph.greedy();
             List<Alignment> alignments = Graph.alignments(orderedEdges);
             List<Alignment> alignmentsShifted = Graph.shifts(alignments);
-            for (Alignment alignment : alignmentsShifted) {
-                System.out.println(alignment.getSource());
-                System.out.println(alignment.getDestination());
-                System.out.println(alignment.getShifts());
-            }
-            // 3. Perform "semi-global" alignment (computation of Hamiltonian path?)
-//            List<Edge> path = graph.greedy();
-            // 3. Gaps
-//            gaps(path);
-            // 4. Consensus
-//            String chaine = consensus(path);
+            String finalString = consensus(alignmentsShifted);
+
             // 5. Print the string
-//            System.out.println(chaine);
-//            String chaineIC = reversedComplementaryString(chaine);
+            System.out.println(finalString);
+            String stringIC = reversedComplementaryString(finalString);
+            System.out.println(stringIC);
 //            writeFile(chaine, pathOutput);
 //            writeFile(chaineIC, pathOutputIC);
         }
