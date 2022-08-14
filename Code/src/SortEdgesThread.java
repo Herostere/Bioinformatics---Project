@@ -16,18 +16,17 @@ public class SortEdgesThread extends Thread {
     }
 
     public void run() {
-        System.out.println("Starting " + name);
         int numberOfNodes = nodes.size();
-        for (int i = start; i < end; i++) {
+        for (int i = start; i <= end; i++) {
             Fragment node1 = nodes.get(i);
             for (int j = 0; j < numberOfNodes; j++) {
                 Fragment node2 = nodes.get(j);
                 if (i != j && i != j + (numberOfNodes / 2) && j != i + (numberOfNodes / 2)){
-                    int score = Graph.semiGlobalAlignmentScore(node1, node2).getScore();
+                    semiGlobalScoreMatrix semiGlobal = Graph.semiGlobalAlignmentScore(node1, node2);
+                    int score = semiGlobal.score();
                     edges.add(new Edge(node1, node2, score));
                 }
             }
         }
-        System.out.println("Completed: " + name);
     }
 }

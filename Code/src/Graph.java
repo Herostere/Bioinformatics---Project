@@ -1,4 +1,3 @@
-import javax.sound.midi.Soundbank;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -48,10 +47,11 @@ public class Graph {
         int matrixHorizontalLength = secondFragmentLength + 1;
         int[][] matrix = new int[matrixVerticalLength][matrixHorizontalLength];
 
+        String firstFragmentString = firstFragment.getFragment();
+        String secondFragmentString = secondFragment.getFragment();
         for (int i = 1; i < matrixVerticalLength; i++) {
             for (int j = 1; j < matrixHorizontalLength; j++) {
-                String firstFragmentString = firstFragment.getFragment();
-                String secondFragmentString = secondFragment.getFragment();
+
                 int element1 = matrix[i - 1][j] - 2;
                 char firstChar = firstFragmentString.charAt(i-1);
                 char secondChar = secondFragmentString.charAt(j-1);
@@ -64,29 +64,32 @@ public class Graph {
 
         int[] lastLine = matrix[matrixVerticalLength-1];
         int lastLineMaximum = Integer.MIN_VALUE;
-        // int lastLineMaximumIndex = -1;
+        int lastLineMaximumIndex = -1;
         for (int i = 0; i < lastLine.length - 1; i++) {
             int currentElement = lastLine[i];
             if (currentElement >= lastLineMaximum) {
                 lastLineMaximum = currentElement;
-                // lastLineMaximumIndex = i;
+                lastLineMaximumIndex = i;
             }
         }
 
         int lastIndex = matrixHorizontalLength - 1;
         int lastColumnMaximum = Integer.MIN_VALUE;
-        // int lastColumnMaximumIndex = -1;
+        int lastColumnMaximumIndex = -1;
         for (int i = 0; i < matrixVerticalLength; i++) {
             int currentElement = matrix[i][lastIndex];
             if (currentElement >= lastColumnMaximum) {
                 lastColumnMaximum = currentElement;
-                // lastColumnMaximumIndex = i;
+                lastColumnMaximumIndex = i;
             }
         }
 
-        semiGlobalScoreMatrix scoreMatrix = new semiGlobalScoreMatrix(Integer.max(lastLineMaximum, lastColumnMaximum), matrix);
-
-        return scoreMatrix;
+        if (lastLineMaximum > lastColumnMaximum) {
+            return new semiGlobalScoreMatrix(lastLineMaximum, matrix, lastLineMaximumIndex, "line");
+        }
+        else {
+            return new semiGlobalScoreMatrix(lastColumnMaximum, matrix, lastColumnMaximumIndex, "column");
+        }
     }
 
     /**
@@ -98,8 +101,6 @@ public class Graph {
         int[] in = new int[numberOfNodes];
         int[] out = new int[numberOfNodes];
         List<List<Fragment>> listOfSets = new ArrayList<>();
-//        int[][] overlapGraph = getOverlapGraph();
-//        System.out.println(Arrays.deepToString(overlapGraph));
 
         for (int i = 0; i < numberOfNodes; i++) {
             List<Fragment> initialList = new ArrayList<>();
@@ -150,37 +151,107 @@ public class Graph {
         listOfSets.add(list1);
     }
 
+    public static List<Alignment> alignments(List<Fragment> fragments) {
+        List<Alignment> alignmentsList = new ArrayList<>();
+        int i = 0;
+        int j = 1;
+        while (i < fragments.size() - 1) {
+            Fragment fragment1 = fragments.get(i);
+            Fragment fragment2 = fragments.get(j);
+            alignmentsList.add(alignment(fragment1, fragment2, semiGlobalAlignmentScore(fragment1, fragment2)));
+            i += 1;
+            j += 1;
+        }
+        return alignmentsList;
+    }
+
+    public static Alignment alignment(Fragment fragment1, Fragment fragment2, semiGlobalScoreMatrix semiGlobal) {
+        int i = 0;
+        int j = 0;
+        char charFrag1;
+        char charFrag2;
+        StringBuilder construction1 = new StringBuilder();
+        StringBuilder construction2 = new StringBuilder();
+
+        switch (semiGlobal.position()) {
+            case "line" -> {
+                i = semiGlobal.matrix().length-1;
+                j = semiGlobal.index();
+            }
+            case "column" -> {
+                i = semiGlobal.index();
+                j = semiGlobal.matrix()[i].length-1;
+            }
+        }
+
+        while(i != 0 && j != 0) {
+            int currentScore = semiGlobal.matrix()[i][j];
+
+            int scoreUp = semiGlobal.matrix()[i-1][j];
+            int scoreLeft = semiGlobal.matrix()[i][j-1];
+            int scoreDiagonal = semiGlobal.matrix()[i-1][j-1];
+
+            // diagonal case
+            charFrag1 = fragment1.getFragment().charAt(i-1);
+            charFrag2 = fragment2.getFragment().charAt(j-1);
+            if ((charFrag1 == charFrag2 && scoreDiagonal + 1 == currentScore) || (charFrag1 != charFrag2 && scoreDiagonal - 1 == currentScore)) {
+                construction1.insert(0, charFrag1);
+                construction2.insert(0, charFrag2);
+                i -= 1;
+                j -= 1;
+            }
+            // left case
+            else if (scoreLeft - 2 == currentScore) {
+                construction1.insert(0, "-");
+                construction2.insert(0, charFrag2);
+                j -= 1;
+            }
+            // up case
+            else if (scoreUp - 2 == currentScore) {
+                construction1.insert(0, charFrag1);
+                construction2.insert(0, "-");
+                i -= 1;
+            }
+        }
+        while (i > 0) {
+            charFrag1 = fragment1.getFragment().charAt(i-1);
+            construction1.insert(0, charFrag1);
+            construction2.insert(0, "-");
+            i -= 1;
+        }
+        while (j > 0) {
+            charFrag2 = fragment2.getFragment().charAt(j-1);
+            construction2.insert(0, charFrag2);
+            construction1.insert(0, "-");
+            j -= 1;
+        }
+        for (int x = semiGlobal.index(); x < fragment1.getLength(); x++) {
+            charFrag1 = fragment1.getFragment().charAt(Math.max(0, x-1));
+            construction1.insert(Math.max(0, construction1.length() - 1), charFrag1);
+            construction2.insert(Math.max(0, construction1.length() - 1), "-");
+        }
+        for (int x = semiGlobal.index(); x < fragment2.getLength(); x++) {
+            charFrag2 = fragment2.getFragment().charAt(Math.max(0, x-1));
+            construction2.insert(Math.max(0, construction2.length() - 1), charFrag2);
+            construction1.insert(Math.max(0, construction1.length() - 1), "-");
+        }
+        return new Alignment(construction1, construction2);
+    }
+
     private List<Edge> sortEdges() {
-//         List<Edge> edges = new ArrayList<>(numberOfNodes * (numberOfNodes - 2));
-//         System.out.println("Constructing edges:");
-//         for (int i = 0; i < numberOfNodes; i++) {
-//            int percentage = (int) (((float) i / numberOfNodes) * 10);
-//            System.out.print("\r");
-//            System.out.print("[" + "*".repeat(percentage) + "-".repeat(10 - percentage) + "]");
-//            Fragment node1 = nodes.get(i);
-//            for (int j = 0; j < numberOfNodes; j++) {
-//                Fragment node2 = nodes.get(j);
-//                if (i != j && i != j + (numberOfNodes / 2) && j != i + (numberOfNodes / 2)){
-//                    int score = semiGlobalAlignmentScore(node1, node2);
-//                    edges.add(new Edge(node1, node2, score));
-//                }
-//            }
-//        }
-//        System.out.print("\r");
-//        System.out.print("[" + "*".repeat(10) + "]");
-//        System.out.println();
         List<Edge> edges = new ArrayList<>(numberOfNodes * (numberOfNodes - 2));
-        int numberOfThreads = 20;
+        int numberOfThreads = 50;
         int partitionSize = numberOfNodes / numberOfThreads;
         List<Integer> range = IntStream.rangeClosed(0, numberOfNodes - 1).boxed().toList();
         List<List<Integer>> partitions = new ArrayList<>();
-        for (int i = 0; i < range.size(); i += partitionSize) {
-            partitions.add(range.subList(i, Math.min(i + partitionSize, range.size())));
+        List<Integer> collection = IntStream.rangeClosed(0, 261).boxed().collect(Collectors.toList());
+        for (int i = 0; i < collection.size(); i += partitionSize) {
+            partitions.add(collection.subList(i, Math.min(i + partitionSize, collection.size())));
         }
         List<SortEdgesThread> threads = new ArrayList<>(numberOfThreads);
         int i = 0;
-        for (List<Integer> list : partitions) {
-            threads.add(new SortEdgesThread(nodes, "Thread " + i, list.get(0), list.get(list.size() - 1), edges));
+        for (List<Integer> partition : partitions) {
+            threads.add(new SortEdgesThread(nodes, "Thread " + i, partition.get(0), partition.get(partition.size() - 1), edges));
             i += 1;
         }
         for (SortEdgesThread thread : threads) {

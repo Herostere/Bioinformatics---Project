@@ -324,6 +324,7 @@ public class FragmentAssembler {
             // 2. Construction of the graph
             Graph graph = new Graph(collection1);
             List<Fragment> orderedEdges = graph.greedy();
+            List<Alignment> edgesAlignments = Graph.alignments(orderedEdges);
             // 3. Perform "semi-global" alignment (computation of Hamiltonian path?)
 //            List<Edge> path = graph.greedy();
             // 3. Gaps
