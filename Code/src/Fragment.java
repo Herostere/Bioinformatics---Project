@@ -3,8 +3,8 @@
  */
 public class Fragment {
 
-    private int length;
-    private String fragment;
+    private final int length;
+    private final String fragment;
     private int shift;
 
     public Fragment(String fragment) {

@@ -1,14 +1,12 @@
 import java.util.List;
 
 public class SortEdgesThread extends Thread {
-    private final String name;
     private final int start;
     private final int end;
     private final List<Fragment> nodes;
     private final List<Edge> edges;
 
     public SortEdgesThread(List<Fragment> nodes, String name, int start, int end, List<Edge> edges) {
-        this.name = name;
         this.start = start;
         this.end = end;
         this.nodes = nodes;

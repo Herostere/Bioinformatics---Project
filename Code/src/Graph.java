@@ -22,11 +22,15 @@ public class Graph {
      */
     public List<Fragment> constructorNodes(Collection fragments){
         List<Fragment> nodesList = new ArrayList<>(fragments.getCollection().length);
+        nodesList.addAll(Arrays.asList(fragments.getCollection()));
+        // Todo check if better without loop
+        /*
         for (Fragment fragment : fragments.getCollection()) {
             if (!nodesList.contains(fragment) && !nodesList.contains(fragment.reversedComplementary())) {
                 nodesList.add(fragment);
             }
         }
+        */
         int numberOfNodesTemp = nodesList.size();
         for (int i = 0; i < numberOfNodesTemp; i++){
             Fragment inverse = nodesList.get(i).reversedComplementary();

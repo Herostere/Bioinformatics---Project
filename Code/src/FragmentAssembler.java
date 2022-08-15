@@ -209,12 +209,11 @@ public class FragmentAssembler {
 
 
     public static void main(String[] args) {
-        String pathInput = "";
         String pathOutput = "";
         String pathOutputIC = "";
 
         if (args.length==5) {
-            pathInput = args[0];
+            String pathInput = args[0];
             if (args[1].equals("-out")) {
                 pathOutput = args[2];
             }
