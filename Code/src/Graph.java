@@ -87,10 +87,10 @@ public class Graph {
         }
 
         if (lastLineMaximum > lastColumnMaximum) {
-            return new semiGlobalScoreMatrix(lastLineMaximum, matrix, lastLineMaximumIndex, "line");
+            return new semiGlobalScoreMatrix(lastLineMaximum, matrix, lastLineMaximumIndex, (byte) 0);
         }
         else {
-            return new semiGlobalScoreMatrix(lastColumnMaximum, matrix, lastColumnMaximumIndex, "column");
+            return new semiGlobalScoreMatrix(lastColumnMaximum, matrix, lastColumnMaximumIndex, (byte) 1);
         }
     }
 
@@ -176,11 +176,11 @@ public class Graph {
         StringBuilder construction2 = new StringBuilder();
 
         switch (semiGlobal.position()) {
-            case "line" -> {
+            case 0 -> {
                 i = semiGlobal.matrix().length-1;
                 j = semiGlobal.index();
             }
-            case "column" -> {
+            case 1 -> {
                 i = semiGlobal.index();
                 j = semiGlobal.matrix()[i].length-1;
             }
@@ -227,7 +227,7 @@ public class Graph {
             construction1.insert(0, ".");
             j -= 1;
         }
-        if (semiGlobal.position().equals("column")) {
+        if (semiGlobal.position() == 1) {
             for (int x = semiGlobal.index(); x < fragment1.getLength(); x++) {
                 charFrag1 = fragment1.getFragment().charAt(Math.max(0, x - 1));
                 construction1.insert(Math.max(0, construction1.length() - 1), charFrag1);

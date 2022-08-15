@@ -1,3 +1,3 @@
-public record semiGlobalScoreMatrix(int score, int[][] matrix, int index, String position) {
+public record semiGlobalScoreMatrix(int score, int[][] matrix, int index, byte position) {
 
 }
