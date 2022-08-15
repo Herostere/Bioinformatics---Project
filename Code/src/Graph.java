@@ -272,9 +272,8 @@ public class Graph {
         List<Edge> edges = new ArrayList<>(numberOfNodes * (numberOfNodes - 2));
         int numberOfThreads = 50;
         int partitionSize = numberOfNodes / numberOfThreads;
-        List<Integer> range = IntStream.rangeClosed(0, numberOfNodes - 1).boxed().toList();
         List<List<Integer>> partitions = new ArrayList<>();
-        List<Integer> collection = IntStream.rangeClosed(0, 261).boxed().collect(Collectors.toList());
+        List<Integer> collection = IntStream.rangeClosed(0, numberOfNodes - 1).boxed().collect(Collectors.toList());
         for (int i = 0; i < collection.size(); i += partitionSize) {
             partitions.add(collection.subList(i, Math.min(i + partitionSize, collection.size())));
         }
