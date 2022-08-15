@@ -4,14 +4,11 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 /**
  * This class is the main class for the Fragment Assembler.
  */
 public class FragmentAssembler {
-
-    private static ArrayList<Fragment> fragments;
     private static String collectionNumber = "";
 
     /**
@@ -22,7 +19,7 @@ public class FragmentAssembler {
      */
     public static ArrayList<Fragment> extractFragments(String path) {
 
-        fragments = new ArrayList<>();
+        ArrayList<Fragment> fragments = new ArrayList<>();
         String data;
 
         try {
@@ -61,7 +58,6 @@ public class FragmentAssembler {
         }
         return fragments;
     }
-
 
     private static String consensus(List<Alignment> shifted) {
         int index = findSomething(shifted);
@@ -157,25 +153,25 @@ public class FragmentAssembler {
         return -1;
     }
 
-    public static void writeFile(String chaine, String pathOutput) {
+    public static void writeFile(String finalString, String pathOutput) {
         try {
             FileWriter myWriter = new FileWriter(pathOutput);
             int splits;
-            if (chaine.length() % 80 == 0){
-                splits = chaine.length() / 80;
+            if (finalString.length() % 80 == 0){
+                splits = finalString.length() / 80;
             }
             else {
-                splits = (chaine.length() / 80) + 1;
+                splits = (finalString.length() / 80) + 1;
             }
             String[] stringSplits = new String[splits];
             int currentIndex = 0;
             for (int i = 0; i < splits; i++) {
-                int endIndex = Math.min((currentIndex + 80), chaine.length());
-                stringSplits[i] = chaine.substring(currentIndex, endIndex);
+                int endIndex = Math.min((currentIndex + 80), finalString.length());
+                stringSplits[i] = finalString.substring(currentIndex, endIndex);
                 currentIndex += 80;
             }
 
-            myWriter.write("> Groupe-1 " + collectionNumber + " Longueur " + chaine.length());
+            myWriter.write("> Groupe-1 " + collectionNumber + " Longueur " + finalString.length());
             myWriter.write("\n");
             for (String strings : stringSplits) {
                 myWriter.write(strings + "\n");
@@ -207,7 +203,6 @@ public class FragmentAssembler {
         return reverseComplementary;
     }
 
-
     public static void main(String[] args) {
         String pathOutput = "";
         String pathOutputIC = "";
@@ -232,8 +227,8 @@ public class FragmentAssembler {
             Graph graph = new Graph(collection1);
             List<Fragment> orderedEdges = graph.greedy();
             List<Alignment> alignments = Graph.alignments(orderedEdges);
-            List<Alignment> alignmentsShifted = Graph.shifts(alignments);
-            String finalString = consensus(alignmentsShifted);
+            Graph.shifts(alignments);
+            String finalString = consensus(alignments);
 
             // 5. Print the string
             System.out.println(finalString);

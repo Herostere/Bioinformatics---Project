@@ -9,12 +9,6 @@ public class Alignment {
         this.shifts = 0;
     }
 
-    public Alignment(StringBuilder source, StringBuilder destination, int shifts) {
-        this.source = String.valueOf(source);
-        this.destination = String.valueOf(destination);
-        this.shifts = shifts;
-    }
-
     public String getSource() {
         return source;
     }

@@ -175,6 +175,7 @@ public class Graph {
         StringBuilder construction1 = new StringBuilder();
         StringBuilder construction2 = new StringBuilder();
 
+        // Identify where is the "higher" value in the matrix.
         switch (semiGlobal.position()) {
             case 0 -> {
                 i = semiGlobal.matrix().length-1;
@@ -242,19 +243,17 @@ public class Graph {
         return new Alignment(construction1, construction2);
     }
 
-    public static List<Alignment> shifts(List<Alignment> alignments) {
-        List<Alignment> shiftedAlignments = new ArrayList<>();
-        String currentDestination = alignments.get(0).getDestination();
-        String currentSource;
-        shiftedAlignments.add(new Alignment(new StringBuilder(alignments.get(0).getSource()), new StringBuilder(alignments.get(0).getDestination())));
+    public static void shifts(List<Alignment> alignments) {
+        Alignment alignment = alignments.get(0);
+        String currentDestination = alignment.getDestination();
+        alignment.setShifts(0);
         int totalShifts = countShifts(currentDestination);
         for (int i = 1; i < alignments.size(); i++) {
-            currentDestination = alignments.get(i).getDestination();
-            currentSource = alignments.get(i).getSource();
-            shiftedAlignments.add(new Alignment(new StringBuilder(currentSource), new StringBuilder(currentDestination), totalShifts));
+            alignment = alignments.get(i);
+            currentDestination = alignment.getDestination();
+            alignment.setShifts(totalShifts);
             totalShifts += countShifts(currentDestination);
         }
-        return shiftedAlignments;
     }
 
     private static int countShifts(String fragment) {
