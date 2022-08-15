@@ -11,7 +11,6 @@
 .mtj.tmp/
 
 # Package Files #
-*.jar
 *.war
 *.nar
 *.ear
@@ -25,3 +24,5 @@ hs_err_pid*
 # IntelliJ files
 Code/.idea
 Code/Code.iml
+.idea/
+*.xml
