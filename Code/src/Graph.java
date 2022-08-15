@@ -102,9 +102,9 @@ public class Graph {
      * @return The ordered list of fragments that are in the path.
      */
     public List<Fragment> greedy(){
-        int[] in = new int[numberOfNodes];
-        int[] out = new int[numberOfNodes];
-        List<List<Fragment>> listOfSets = new ArrayList<>();
+        boolean[] in = new boolean[numberOfNodes];
+        boolean[] out = new boolean[numberOfNodes];
+        List<List<Fragment>> listOfSets = new ArrayList<>(numberOfNodes);
 
         for (int i = 0; i < numberOfNodes; i++) {
             List<Fragment> initialList = new ArrayList<>();
@@ -126,9 +126,9 @@ public class Graph {
             if (fInG || gInF) {
                 continue;
             }
-            if (in[indexG] == 0 && out[indexF] == 0 && (foundF.size() != foundG.size() || !foundF.equals(foundG))) {
-                in[indexG] = 1;
-                out[indexF] = 1;
+            if (!in[indexG] && !out[indexF] && (foundF.size() != foundG.size() || !foundF.equals(foundG))) {
+                in[indexG] = true;
+                out[indexF] = true;
                 union(listOfSets, foundF, foundG);
             }
             if (listOfSets.size() == 1) {
@@ -282,10 +282,8 @@ public class Graph {
             partitions.add(collection.subList(i, Math.min(i + partitionSize, collection.size())));
         }
         List<SortEdgesThread> threads = new ArrayList<>(numberOfThreads);
-        int i = 0;
         for (List<Integer> partition : partitions) {
-            threads.add(new SortEdgesThread(nodes, "Thread " + i, partition.get(0), partition.get(partition.size() - 1), edges));
-            i += 1;
+            threads.add(new SortEdgesThread(nodes, partition.get(0), partition.get(partition.size() - 1), edges));
         }
         for (SortEdgesThread thread : threads) {
             thread.start();

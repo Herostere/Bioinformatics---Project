@@ -5,12 +5,10 @@ public class Fragment {
 
     private final int length;
     private final String fragment;
-    private int shift;
 
     public Fragment(String fragment) {
         this.length = fragment.length();
         this.fragment = fragment;
-        this.shift = 0; // representing the best shifting for the alignment
     }
 
     public int getLength() {
@@ -19,14 +17,6 @@ public class Fragment {
 
     public String getFragment() {
         return this.fragment;
-    }
-
-    public int getShift() {
-        return this.shift;
-    }
-
-    public void setShift(int x) {
-        this.shift = x;
     }
 
     /**
